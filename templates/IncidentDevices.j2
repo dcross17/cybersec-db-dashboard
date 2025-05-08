@@ -1,0 +1,81 @@
+{# Citation for the following function: #}
+{# Date: 5/6/25 #}
+{# Adapted from Exploation _ Web Application Technology #}
+{# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration_web_application_technology_2?module_item_id=25352948#}
+
+
+
+{% extends "main.j2" %}
+{% block content %}
+
+<h1>Incident Devices</h1>
+
+{# READ table #}
+<table>
+    <thead>
+        {# For the table header row, we print the DB attribute names #}
+        <tr>
+            {% for key in incidentDevices[0].keys() %}
+            <th>{{ key }}</th>
+            {% endfor %}
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for incidentDevice in incidentDevices %}
+        <tr>
+            <td>{{ incidentDevice['incidentDevicesID'] }}</td>
+            <td>{{ incidentDevice['incidentID'] }}</td>
+            <td>{{ incidentDevice['deviceID'] }}</td>
+
+            
+
+            {# DELETE form #}
+            <form id="delete_incident_form">
+                <input type="hidden" name="delete_incident_id" value="{{ incidentDevice['incidentDevicesID'] }}">
+                <td>
+                    <button type="submit">
+                        Delete
+                    </button>
+                </td>
+            </form>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{# CREATE form #}
+<h2>Create an IncidentDevice Intersection</h2>
+<form class="cuForm" id="create_incident_form">
+    
+    <label for="create_incidentDevicesID">Incident Devices ID: </label>
+    <input type="number" name="create_incidentDevicesID" id="create_incidentDevicesID" required>
+
+    <label for="create_incidentID">Incident ID: </label>
+    <input type="number" name="create_incidentID" id="create_incidentID" required>
+
+    <label for="create_deviceID">Device ID: </label>
+    <input type="number" name="create_deviceID" id="create_deviceID" required>
+
+    <input type="submit">
+</form>
+
+{# UPDATE form #}
+<h2>Update an IncidentDevice Intersection</h2>
+<form class="cuForm" id="update_incident_form">
+
+    <label for="update_incidentDevicesID">Incident Devices ID: </label>
+    <input type="number" name="update_incidentDevicesID" id="update_incidentDevicesID" required>
+
+    <label for="update_incidentID">Incident ID: </label>
+    <input type="number" name="update_incidentID" id="update_incidentID" required>
+
+    <label for="update_deviceID">Device ID: </label>
+    <input type="number" name="update_deviceID" id="update_deviceID" required>
+
+
+    <input type="submit">
+</form>
+
+{% endblock %}

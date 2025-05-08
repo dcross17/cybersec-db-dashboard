@@ -1,0 +1,108 @@
+{# Citation for the following function: #}
+{# Date: 5/6/25 #}
+{# Adapted from Exploation - Web Application Technology #}
+{# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-web-application-technology-2?module_item_id=25352948#}
+
+
+
+{% extends "main.j2" %}
+{% block content %}
+
+<h1>Incidents</h1>
+
+{# READ table #}
+<table>
+    <thead>
+        {# For the table header row, we print the DB attribute names #}
+        <tr>
+            {% for key in incidents[0].keys() %}
+            <th>{{ key }}</th>
+            {% endfor %}
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for incident in incidents %}
+        <tr>
+            <td>{{ incident['incidentID'] }}</td>
+            <td>{{ incident['timeOccurred'] }}</td>
+            <td>{{ incident['description'] }}</td>
+            <td>{{ incident['priority'] }}</td>
+            <td>{{ incident['status'] }}</td>
+            <td>{{ incident['threatID'] }}</td>
+
+
+            {# DELETE form #}
+            <form id="delete_incident_form">
+                <input type="hidden" name="delete_incident_id" value="{{ incident['incidentID'] }}">
+                <td>
+                    <button type="submit">
+                        Delete
+                    </button>
+                </td>
+            </form>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{# CREATE form #}
+<h2>Create a Incident</h2>
+<form class="cuForm" id="create_incident_form">
+    
+    <label for="create_incident_timeOccurred">Time and Date: </label>
+    <input type="datetime-local" name="create_incident_timeOccurred" id="create_incident_timeOccurred" required>
+
+    <label for="create_incident_description">Description: </label>
+    <input type="text" name="create_incident_description" id="create_incident_description" required>
+    
+    <label for="create_incident_priority">Priority: </label>
+    <input type = "number" name="create_incident_priority" id="create_incident_priority" required>
+
+    <label for="create_incident_status">Status: </label>
+    <select name="create_incident_status" id="create_incident_status" required>
+        <option value="" disabled selected>Select a Status</option>
+        <option value="Not Started">Not Started</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Completed">Completed</option>
+
+    </select>
+
+    <input type="submit">
+</form>
+
+{# UPDATE form #}
+<h2>Update a Incident</h2>
+<form class="cuForm" id="update_incident_form">
+
+    <select name="update_IncidentsID" id="update_IncidentsID" required>
+        <option value="" disabled selected>Select a Incident</option>
+        {% for incident in incidents %}
+        <option value="{{incident['incidentID']}}">
+            {{incident['incidentID']}}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label for="update_timeOccurred">Time and Date: </label>
+    <input type="datetime-local" name="update_timeOccurred" id="update_timeOccurred" required>
+    
+    <label for="update_incident_description">Description: </label>
+    <input type="text" name="update_incident_description" id="update_incident_description" required>
+    
+    <label for="update_incident_priority">Priority: </label>
+    <input type="integer" name="update_incident_priority" id="update_incident_priority" required>
+    
+    <label for="update_incident_status">Status: </label>
+    <select name="update_incident_status" id="update_incident_status" required>
+        <option value="" disabled selected>Select a Status</option>
+        <option value="Not Started">Not Started</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Completed">Completed</option>
+    </select>
+
+    <input type="submit">
+</form>
+
+{% endblock %}

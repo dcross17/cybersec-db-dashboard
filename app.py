@@ -10,7 +10,7 @@
 from flask import Flask, render_template, request, redirect
 import database.db_connector as db
 
-PORT = 50123
+PORT = 50124
 
 app = Flask(__name__)
 
@@ -27,7 +27,7 @@ def home():
         print(f"Error rendering page: {e}")
         return "An error occurred while rendering the page.", 500
 
-
+# get users
 @app.route("/Users", methods=["GET"])
 def Users():
     try:
@@ -53,6 +53,86 @@ def Users():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+# get incidents
+@app.route("/Incidents", methods=["GET"])
+def Incidents():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+
+        # Create and execute our queries
+        query1 = "SELECT Incidents.incidentID, Incidents.timeOccurred, Incidents.description, Incidents.priority, Incidents.status, Incidents.threatID " \
+        "FROM Incidents;"
+
+        incidents = db.query(dbConnection, query1).fetchall()
+        
+
+        # Render the incidents j2 file, and also send the renderer
+        return render_template(
+            "Incidents.j2", incidents=incidents
+        )
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+# get IncidentDevices
+@app.route("/IncidentDevices", methods=["GET"])
+def IncidentDevices():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+
+        # Create and execute our queries
+        query1 = "SELECT IncidentDevices.incidentDevicesID, IncidentDevices.incidentID, IncidentDevices.deviceID "\
+        "FROM IncidentDevices;"
+
+        incidentDevices = db.query(dbConnection, query1).fetchall()
+        
+
+        # Render the incidents j2 file, and also send the renderer
+        return render_template(
+            "IncidentDevices.j2", incidentDevices=incidentDevices
+        )
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+# get responses
+@app.route("/Responses", methods=["GET"])
+def Responses():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+
+        # Create and execute our queries
+        query1 = "SELECT Responses.responseID, Responses.incidentID, Responses.userID, Responses.timeStarted, Responses.timeEnded, Responses.actionPerformed, Responses.status "\
+        "FROM Responses;"
+
+        responses = db.query(dbConnection, query1).fetchall()
+        
+
+        # Render the incidents j2 file, and also send the renderer
+        return render_template(
+            "Responses.j2", responses=responses
+        )
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
 
 
 
