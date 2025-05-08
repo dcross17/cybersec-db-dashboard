@@ -1,9 +1,8 @@
 # Citation for the following function:
 # Date: 5/6/25
-# Copied from Exploation - Web Application Technology
+# Adapted from Exploation - Web Application Technology
 # Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-web-application-technology-2?module_item_id=25352948
 
-# test line for git
 
 # ########################################
 # ########## SETUP
@@ -29,25 +28,20 @@ def home():
         return "An error occurred while rendering the page.", 500
 
 
-@app.route("/bsg-people", methods=["GET"])
-def bsg_people():
+@app.route("/Users", methods=["GET"])
+def Users():
     try:
         dbConnection = db.connectDB()  # Open our database connection
 
         # Create and execute our queries
-        # In query1, we use a JOIN clause to display the names of the homeworlds,
-        #       instead of just ID values
-        query1 = "SELECT bsg_people.id, bsg_people.fname, bsg_people.lname, \
-            bsg_planets.name AS 'homeworld', bsg_people.age FROM bsg_people \
-            LEFT JOIN bsg_planets ON bsg_people.homeworld = bsg_planets.id;"
-        query2 = "SELECT * FROM bsg_planets;"
-        people = db.query(dbConnection, query1).fetchall()
-        homeworlds = db.query(dbConnection, query2).fetchall()
+        query1 = "SELECT Users.userID, Users.firstName, Users.lastName, Users.email, Users.department, Users.role " \
+        "FROM Users;"
+        users = db.query(dbConnection, query1).fetchall()
+        
 
-        # Render the bsg-people.j2 file, and also send the renderer
-        # a couple objects that contains bsg_people and bsg_homeworld information
+        # Render the users j2 file, and also send the renderer
         return render_template(
-            "bsg-people.j2", people=people, homeworlds=homeworlds
+            "Users.j2", users=users
         )
 
     except Exception as e:
@@ -58,6 +52,7 @@ def bsg_people():
         # Close the DB connection, if it exists
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
+
 
 
 
