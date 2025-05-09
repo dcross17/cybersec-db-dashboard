@@ -1,0 +1,94 @@
+{% extends "main.j2" %}
+{% block content %}
+
+<h1>Services</h1>
+
+{# READ table #}
+<table>
+    <thead>
+        {# For the table header row, we print the DB attribute names #}
+        <tr>
+            {% for key in services[0].keys() %}
+            <th>{{ key }}</th>
+            {% endfor %}
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for service in services %}
+        <tr>
+            <td>{{ service['serviceID'] }}</td>
+            <td>{{ service['serviceName'] }}</td>
+            <td>{{ service['port'] }}</td>
+            <td>{{ service['protocol'] }}</td>
+
+
+            {# DELETE form #}
+            <form id="delete_service_form">
+                <input type="hidden" name="delete_service_id" value="{{ service['serviceID'] }}">
+                <input type="hidden" name="delete_service_name" value="{{ service['serviceName'] }}">
+                <td>
+                    <button type="submit">
+                        Delete
+                    </button>
+                </td>
+            </form>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{# CREATE form #}
+<h2>Create a Service</h2>
+<form class="cuForm" id="create_service_form">
+    <label for="create_service_firstName">Service Name: </label>
+    <input type="text" name="create_service_name" id="create_service_name" required>
+
+    <label for="create_service_port">Port: </label>
+    <input type="number" name="create_service_port" id="create_service_port" min = "0" max = "65535" required>
+
+    <label for="create_service_protocol">Protocol: </label>
+    <select name="create_service_protocol" id="create_service_protocol" required>
+        <option value="" disabled selected>Select a protocol</option>
+        <option value="TCP">TCP</option>
+        <option value="UDP">UDP</option>
+        <option value="Other">Other</option>
+    </select>
+
+
+    <input type="submit">
+</form>
+
+{# UPDATE form #}
+<h2>Update a Service</h2>
+<form class="cuForm" id="update_service_form">
+    <label for="update_service_id">Service to Update: </label>
+    <select name="update_service_id" id="update_service_id" required>
+        <option value="" disabled selected>Select a Service</option>
+        {% for service in services %}
+        <option value="{{service['serviceID']}}" required>
+            {{service['serviceID']}}
+            {{service['serviceName']}}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label for="update_service_name">Service Name: </label>
+    <input type="text" name="update_service_name" id="update_service_name">
+
+    <label for="update_service_port">Port: </label>
+    <input type="number" name="update_service_port" min = "0" max = "65535" id="update_service_port">
+
+    <label for="update_service_protocol">Protocol: </label>
+    <select name="update_service_status" id="update_service_status">
+        <option value="" disabled selected>Select a protocol</option>
+        <option value="TCP">TCP</option>
+        <option value="UDP">UDP</option>
+        <option value="Other">Other</option>
+    </select>
+
+    <input type="submit">
+</form>
+
+{% endblock %}

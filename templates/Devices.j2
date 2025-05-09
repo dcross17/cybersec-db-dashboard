@@ -1,0 +1,132 @@
+{% extends "main.j2" %}
+{% block content %}
+
+<h1>Devices</h1>
+
+{# READ table #}
+<table>
+    <thead>
+        {# For the table header row, we print the DB attribute names #}
+        <tr>
+            {% for key in devices[0].keys() %}
+            <th>{{ key }}</th>
+            {% endfor %}
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for device in devices %}
+        <tr>
+            <td>{{ device['deviceID'] }}</td>
+            <td>{{ device['deviceName'] }}</td>
+            <td>{{ device['IPAddress'] }}</td>
+            <td>{{ device['deviceType'] }}</td>
+            <td>{{ device['status'] }}</td>
+            <td>{{ device['assignedTo'] }}</td>
+
+
+            {# DELETE form #}
+            <form id="delete_device_form">
+                <input type="hidden" name="delete_device_id" value="{{ device['deviceID'] }}">
+                <input type="hidden" name="delete_device_name" value="{{ device['deviceName'] }}">
+                <td>
+                    <button type="submit">
+                        Delete
+                    </button>
+                </td>
+            </form>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{# CREATE form #}
+<h2>Create a Device</h2>
+<form class="cuForm" id="create_device_form">
+    <label for="create_device_firstName">Device Name: </label>
+    <input type="text" name="create_device_name" id="create_device_name" required>
+
+    <label for="create_device_ipAddress">IP Address: </label>
+    <input type="text" name="create_device_ipAddress" id="create_device_ipAddress" required>
+
+    <label for="create_device_type">Device Type: </label>
+    <select name="create_device_type" id="create_device_type" required>
+        <option value="" disabled selected>Select a device type</option>
+        <option value="Server">Server</option>
+        <option value="PC">PC</option>
+        <option value="VM">Virtual Machine</option>
+        <option value="Other">Other</option>
+    </select>
+
+    <label for="create_device_status">Status: </label>
+    <select name="create_device_status" id="create_device_status" required>
+        <option value="" disabled selected>Select a status</option>
+        <option value="Active">Active</option>
+        <option value="Offline">Offline</option>
+        <option value="Disable">Disabled</option>
+    </select>
+
+    <label for="create_device_assignedTo">User: </label>
+    <select name="create_device_assignedTo" id="create_device_assignedTo" required>
+        <option value="" disabled selected>Select a user</option>
+        {% for user in users %}
+        <option value="{{user['userID']}}">
+          {{user['userID'] }} {{user['firstName']}} {{user['lastName']}}
+        </option>
+        {% endfor %}
+    </select>
+
+    <input type="submit">
+</form>
+
+{# UPDATE form #}
+<h2>Update a Device</h2>
+<form class="cuForm" id="update_device_form">
+    <label for="update_device_id">Device to Update: </label>
+    <select name="update_device_id" id="update_device_id" required>
+        <option value="" disabled selected>Select a Device</option>
+        {% for device in devices %}
+        <option value="{{device['deviceID']}}" required>
+            {{device['deviceID']}}
+            {{device['deviceName']}}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label for="update_device_name">Device Name: </label>
+    <input type="text" name="update_device_name" id="update_device_name">
+
+    <label for="update_device_ipAddress">IP Address: </label>
+    <input type="text" name="update_device_ipAddress" id="update_device_ipAddress">
+
+    <label for="update_device_type">Device Type: </label>
+    <select name="update_device_type" id="update_device_type" required>
+        <option value="" disabled selected>Select a device type</option>
+        <option value="Server">Server</option>
+        <option value="PC">PC</option>
+        <option value="VM">Virtual Machine</option>
+        <option value="Other">Other</option>
+    </select>
+
+    <label for="update_device_status">Status: </label>
+    <select name="update_device_status" id="update_device_status" required>
+        <option value="" disabled selected>Select a status</option>
+        <option value="Active">Active</option>
+        <option value="Offline">Offline</option>
+        <option value="Disable">Disabled</option>
+    </select>
+
+    <label for="update_device_assignedTo">User: </label>
+    <select name="update_device_assignedTo" id="update_device_assignedTo" required>
+        <option value="" disabled selected>Select a user</option>
+        {% for user in users %}
+        <option value="{{user['userID']}}">
+          {{user['userID'] }} {{user['firstName']}} {{user['lastName']}}
+        </option>
+        {% endfor %}
+
+    <input type="submit">
+</form>
+
+{% endblock %}

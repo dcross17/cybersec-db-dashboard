@@ -1,0 +1,109 @@
+{% extends "main.j2" %}
+{% block content %}
+
+<h1>DeviceServices</h1>
+
+{# READ table #}
+<table>
+    <thead>
+        {# For the table header row, we print the DB attribute names #}
+        <tr>
+            {% for key in deviceServices[0].keys() %}
+            <th>{{ key }}</th>
+            {% endfor %}
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for deviceService in deviceServices %}
+        <tr>
+            <td>{{ deviceService['deviceServiceID'] }}</td>
+            <td>{{ deviceService['deviceID'] }}</td>
+            <td>{{ deviceService['serviceID'] }}</td>
+
+
+            {# DELETE form #}
+            <form id="delete_deviceService_form">
+                <input type="hidden" name="delete_deviceService_id" value="{{ deviceService['deviceID'] }}">
+                <input type="hidden" name="delete_deviceService_name" value="{{ deviceService['deviceName'] }}">
+                <td>
+                    <button type="submit">
+                        Delete
+                    </button>
+                </td>
+            </form>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{# CREATE form #}
+<h2>Create DeviceService</h2>
+<form class="cuForm" id="create_deviceService_form">
+    <label for="create_deviceService_firstName">deviceService Name: </label>
+    <select name="create_deviceService_name" id="create_deviceService_name" required>
+        <option value="" disabled selected>Select a Device</option>
+        {% for device in devices %}
+        <option value="{{device['deviceID']}}" required>
+            {{device['deviceID']}}
+            {{device['deviceName']}}
+        </option>
+        {% endfor %}
+    </select>
+
+    <select name="create_deviceService_serviceID" id="create_deviceService_serviceID" required>
+        <option value="" disabled selected>Select a Service</option>
+        {% for service in services %}
+        <option value="{{service['serviceID']}}" required>
+            {{service['serviceID']}}
+            {{service['serviceName']}}
+        </option>
+        {% endfor %}
+    </select>
+
+
+    
+
+    <input type="submit">
+</form>
+
+{# UPDATE form #}
+<h2>Update DeviceService</h2>
+<form class="cuForm" id="update_deviceService_form">
+    <label for="update_deviceService_id">deviceService to Update: </label>
+    <select name="update_deviceService_id" id="update_deviceService_id" required>
+        <option value="" disabled selected>Select a deviceService</option>
+        {% for deviceService in deviceServices %}
+        <option value="{{deviceService['deviceID']}}" required>
+            {{deviceService['deviceServiceID']}}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label for="update_deviceService_device">Device: </label>
+    <select name="update_deviceService_device" id="update_deviceService_device" required>
+        <option value="" disabled selected>Select a Device</option>
+        {% for device in devices %}
+        <option value="{{device['deviceID']}}" required>
+            {{device['deviceID']}}
+            {{device['deviceName']}}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label for="update_deviceService_service">Service: </label>
+    <select name="update_deviceService_service" id="update_deviceService_service" required>
+        <option value="" disabled selected>Select a Service</option>
+        {% for service in services %}
+        <option value="{{service['serviceID']}}" required>
+            {{service['serviceID']}}
+            {{service['serviceName']}}
+        </option>
+        {% endfor %}
+    </select>
+
+    <input type="submit">
+</form>
+
+{% endblock %}

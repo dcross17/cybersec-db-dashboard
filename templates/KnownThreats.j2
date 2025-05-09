@@ -1,0 +1,110 @@
+{% extends "main.j2" %}
+{% block content %}
+
+<h1>KnownThreats</h1>
+
+{# READ table #}
+<table>
+    <thead>
+        {# For the table header row, we print the DB attribute names #}
+        <tr>
+            {% for key in knownThreats[0].keys() %}
+            <th>{{ key }}</th>
+            {% endfor %}
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for knownThreat in knownThreats %}
+        <tr>
+            <td>{{ knownThreat['threatID'] }}</td>
+            <td>{{ knownThreat['name'] }}</td>
+            <td>{{ knownThreat['type'] }}</td>
+            <td>{{ knownThreat['description'] }}</td>
+            <td>{{ knownThreat['dateFirstSeen'] }}</td>
+            <td>{{ knownThreat['dateLastSeen'] }}</td>
+
+
+            {# DELETE form #}
+            <form id="delete_knownThreat_form">
+                <input type="hidden" name="delete_knownThreat_id" value="{{ knownThreat['threatID'] }}">
+                <input type="hidden" name="delete_knownThreat_name" value="{{ knownThreat['name'] }}">
+                <td>
+                    <button type="submit">
+                        Delete
+                    </button>
+                </td>
+            </form>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{# CREATE form #}
+<h2>Create a knownThreat</h2>
+<form class="cuForm" id="create_knownThreat_form">
+    <label for="create_knownThreat_firstName">Threat Name: </label>
+    <input type="text" name="create_knownThreat_name" id="create_knownThreat_name" required>
+
+    <label for="create_knownThreat_type">Type: </label>
+    <select name="create_knownThreat_type" id="create_knownThreat_type" required>
+        <option value="" disabled selected>Select a type</option>
+        <option value="Malware">Malware</option>
+        <option value="Exploit">Exploit</option>
+        <option value="Tool">Tool</option>
+        <option value="Other">Other</option>
+    </select>
+
+    <label for="create_knownThreat_description">Description: </label>
+    <input type="textarea" name="create_knownThreat_description" id="create_knownThreat_description">
+
+    <label for="create_knownThreat_dateFirstSeen">Date First Seen: </label>
+    <input type="date" name="create_knownThreat_dateFirstSeen" id="create_knownThreat_dateFirstSeen">
+
+    <label for="create_knownThreat_dateLastSeen">Date Last Seen: </label>
+    <input type="date" name="create_knownThreat_dateLastSeen" id="create_knownThreat_dateLastSeen">
+
+
+    <input type="submit">
+</form>
+
+{# UPDATE form #}
+<h2>Update a knownThreat</h2>
+<form class="cuForm" id="update_knownThreat_form">
+    <label for="update_knownThreat_id">Threat to Update: </label>
+    <select name="update_knownThreat_id" id="update_knownThreat_id" required>
+        <option value="" disabled selected>Select a knownThreat</option>
+        {% for knownThreat in knownThreats %}
+        <option value="{{knownThreat['knownThreatID']}}" required>
+            {{knownThreat['threatID']}}
+            {{knownThreat['name']}}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label for="update_knownThreat_name">Threat Name: </label>
+    <input type="text" name="update_knownThreat_name" id="update_knownThreat_name">
+
+    <label for="update_knownThreat_type">Type: </label>
+    <select name="update_knownThreat_type" id="update_knownThreat_type" required>
+        <option value="" disabled selected>Select a type</option>
+        <option value="Malware">Malware</option>
+        <option value="Exploit">Exploit</option>
+        <option value="Tool">Tool</option>
+        <option value="Other">Other</option>
+    </select>
+
+    <label for="update_knownThreat_description">Description: </label>
+    <input type="textarea" name="update_knownThreat_description" id="update_knownThreat_description">
+
+    <label for="update_knownThreat_dateFirstSeen">Date First Seen: </label>
+    <input type="date" name="update_knownThreat_dateFirstSeen" id="update_knownThreat_dateFirstSeen">
+    
+    <label for="update_knownThreat_dateLastSeen">Date Last Seen: </label>
+    <input type="date" name="update_knownThreat_dateLastSeen" id="update_knownThreat_dateLastSeen">
+
+    <input type="submit">
+</form>
+
+{% endblock %}
