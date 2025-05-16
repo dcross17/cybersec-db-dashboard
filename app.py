@@ -34,7 +34,7 @@ def Users():
         dbConnection = db.connectDB()  # Open our database connection
 
         # Create and execute our queries
-        query1 = "SELECT Users.userID, Users.firstName, Users.lastName, Users.email, Users.department, Users.role " \
+        query1 = "SELECT Users.userID as 'User ID', Users.firstName as 'First Name', Users.lastName as 'Last Name', Users.email as Email, Users.department as Department, Users.role as 'Role' " \
         "FROM Users;"
         users = db.query(dbConnection, query1).fetchall()
         
@@ -60,7 +60,7 @@ def Incidents():
         dbConnection = db.connectDB()  # Open our database connection
 
         # Create and execute our queries
-        query1 = "SELECT Incidents.incidentID, Incidents.timeOccurred, Incidents.description, Incidents.priority, Incidents.status, Incidents.threatID " \
+        query1 = "SELECT Incidents.incidentID as 'Incident ID', Incidents.timeOccurred as 'Time Occurred', Incidents.description as 'Description', Incidents.priority as Priority, Incidents.status as 'Status', Incidents.threatID as 'Threat ID' " \
         "FROM Incidents;"
 
         incidents = db.query(dbConnection, query1).fetchall()
@@ -87,7 +87,7 @@ def IncidentDevices():
         dbConnection = db.connectDB()  # Open our database connection
 
         # Create and execute our queries
-        query1 = "SELECT IncidentDevices.incidentDevicesID, IncidentDevices.incidentID, IncidentDevices.deviceID "\
+        query1 = "SELECT IncidentDevices.incidentDevicesID as 'Incident Devices ID', IncidentDevices.incidentID as 'Incident ID', IncidentDevices.deviceID as 'Device ID' "\
         "FROM IncidentDevices;"
 
         incidentDevices = db.query(dbConnection, query1).fetchall()
@@ -114,7 +114,7 @@ def Responses():
         dbConnection = db.connectDB()  # Open our database connection
 
         # Create and execute our queries
-        query1 = "SELECT Responses.responseID, Responses.incidentID, Responses.userID, Responses.timeStarted, Responses.timeEnded, Responses.actionPerformed, Responses.status "\
+        query1 = "SELECT Responses.responseID as 'Response ID', Responses.incidentID as 'Incident ID', Responses.userID as 'User ID', Responses.timeStarted as 'Time Started', Responses.timeEnded as 'Time Ended', Responses.actionPerformed as 'Action Performed', Responses.status as 'Status' "\
         "FROM Responses;"
 
         responses = db.query(dbConnection, query1).fetchall()
@@ -141,7 +141,7 @@ def Devices():
         dbConnection = db.connectDB()  # Open our database connection
 
         # Create and execute our queries
-        query1 = "SELECT * " \
+        query1 = "SELECT Devices.deviceID as 'Device ID', Devices.deviceName as 'Device Name', Devices.IPAddress as 'IP Address', Devices.deviceType as 'Device Type', Devices.status as 'Status', Devices.assignedTo as 'Assigned To' " \
         "FROM Devices " \
         
         devices = db.query(dbConnection, query1).fetchall()
@@ -176,7 +176,7 @@ def DeviceServices():
         dbConnection = db.connectDB()  # Open our database connection
 
         # Create and execute our queries
-        query1 = "SELECT * " \
+        query1 = "SELECT DeviceServices.deviceServiceID as 'Device Service ID', DeviceServices.deviceID as 'Device ID', DeviceServices.serviceID as 'Service ID' " \
         "FROM DeviceServices; " \
         
         deviceServices = db.query(dbConnection, query1).fetchall()
@@ -215,7 +215,7 @@ def Services():
         dbConnection = db.connectDB()  # Open our database connection
 
         # Create and execute our queries
-        query1 = "SELECT * " \
+        query1 = "SELECT Services.serviceID as 'Service ID', Services.serviceName as 'Service Name', Services.port as Port, Services.protocol as Protocol " \
         "FROM Services " \
         
         services = db.query(dbConnection, query1).fetchall()
@@ -242,7 +242,7 @@ def KnownThreats():
         dbConnection = db.connectDB()  # Open our database connection
 
         # Create and execute our queries
-        query1 = "SELECT * " \
+        query1 = "SELECT KnownThreats.threatID as 'Threat ID', KnownThreats.name as 'Name', KnownThreats.type as 'Type', KnownThreats.description as 'Description', KnownThreats.dateFirstSeen as 'Date First Seen', KnownThreats.dateLastSeen as 'Date Last Seen' " \
         "FROM KnownThreats " \
         
         knownThreats = db.query(dbConnection, query1).fetchall()

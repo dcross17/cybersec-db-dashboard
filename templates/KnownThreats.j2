@@ -1,7 +1,7 @@
 {% extends "main.j2" %}
 {% block content %}
 
-<h1>KnownThreats</h1>
+<h1>Known Threats</h1>
 
 {# READ table #}
 <table>
@@ -18,12 +18,12 @@
     <tbody>
         {% for knownThreat in knownThreats %}
         <tr>
-            <td>{{ knownThreat['threatID'] }}</td>
-            <td>{{ knownThreat['name'] }}</td>
-            <td>{{ knownThreat['type'] }}</td>
-            <td>{{ knownThreat['description'] }}</td>
-            <td>{{ knownThreat['dateFirstSeen'] }}</td>
-            <td>{{ knownThreat['dateLastSeen'] }}</td>
+            <td>{{ knownThreat['Threat ID'] }}</td>
+            <td>{{ knownThreat['Name'] }}</td>
+            <td>{{ knownThreat['Type'] }}</td>
+            <td>{{ knownThreat['Description'] }}</td>
+            <td>{{ knownThreat['Date First Seen'] }}</td>
+            <td>{{ knownThreat['Date Last Seen'] }}</td>
 
 
             {# DELETE form #}
@@ -76,9 +76,9 @@
     <select name="update_knownThreat_id" id="update_knownThreat_id" required>
         <option value="" disabled selected>Select a knownThreat</option>
         {% for knownThreat in knownThreats %}
-        <option value="{{knownThreat['knownThreatID']}}" required>
-            {{knownThreat['threatID']}}
-            {{knownThreat['name']}}
+        <option value="{{knownThreat['Known Threat ID']}}" required>
+            {{knownThreat['Threat ID']}}
+            {{knownThreat['Name']}}
         </option>
         {% endfor %}
     </select>

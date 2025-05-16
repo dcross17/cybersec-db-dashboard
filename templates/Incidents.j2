@@ -25,17 +25,17 @@
     <tbody>
         {% for incident in incidents %}
         <tr>
-            <td>{{ incident['incidentID'] }}</td>
-            <td>{{ incident['timeOccurred'] }}</td>
-            <td>{{ incident['description'] }}</td>
-            <td>{{ incident['priority'] }}</td>
-            <td>{{ incident['status'] }}</td>
-            <td>{{ incident['threatID'] }}</td>
+            <td>{{ incident['Incident ID'] }}</td>
+            <td>{{ incident['Time Occurred'] }}</td>
+            <td>{{ incident['Description'] }}</td>
+            <td>{{ incident['Priority'] }}</td>
+            <td>{{ incident['Status'] }}</td>
+            <td>{{ incident['Threat ID'] }}</td>
 
 
             {# DELETE form #}
             <form id="delete_incident_form">
-                <input type="hidden" name="delete_incident_id" value="{{ incident['incidentID'] }}">
+                <input type="hidden" name="delete_incident_id" value="{{ incident['Incident ID'] }}">
                 <td>
                     <button type="submit">
                         Delete
@@ -79,8 +79,8 @@
     <select name="update_IncidentsID" id="update_IncidentsID" required>
         <option value="" disabled selected>Select a Incident</option>
         {% for incident in incidents %}
-        <option value="{{incident['incidentID']}}">
-            {{incident['incidentID']}}
+        <option value="{{incident['Incident ID']}}">
+            {{incident['Incident ID']}}
         </option>
         {% endfor %}
     </select>

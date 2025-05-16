@@ -25,15 +25,15 @@
     <tbody>
         {% for incidentDevice in incidentDevices %}
         <tr>
-            <td>{{ incidentDevice['incidentDevicesID'] }}</td>
-            <td>{{ incidentDevice['incidentID'] }}</td>
-            <td>{{ incidentDevice['deviceID'] }}</td>
+            <td>{{ incidentDevice['Incident Devices ID'] }}</td>
+            <td>{{ incidentDevice['Incident ID'] }}</td>
+            <td>{{ incidentDevice['Device ID'] }}</td>
 
             
 
             {# DELETE form #}
             <form id="delete_incident_form">
-                <input type="hidden" name="delete_incident_id" value="{{ incidentDevice['incidentDevicesID'] }}">
+                <input type="hidden" name="delete_incident_id" value="{{ incidentDevice['Device ID'] }}">
                 <td>
                     <button type="submit">
                         Delete

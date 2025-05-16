@@ -18,10 +18,10 @@
     <tbody>
         {% for service in services %}
         <tr>
-            <td>{{ service['serviceID'] }}</td>
-            <td>{{ service['serviceName'] }}</td>
-            <td>{{ service['port'] }}</td>
-            <td>{{ service['protocol'] }}</td>
+            <td>{{ service['Service ID'] }}</td>
+            <td>{{ service['Service Name'] }}</td>
+            <td>{{ service['Port'] }}</td>
+            <td>{{ service['Protocol'] }}</td>
 
 
             {# DELETE form #}
@@ -67,9 +67,9 @@
     <select name="update_service_id" id="update_service_id" required>
         <option value="" disabled selected>Select a Service</option>
         {% for service in services %}
-        <option value="{{service['serviceID']}}" required>
-            {{service['serviceID']}}
-            {{service['serviceName']}}
+        <option value="{{service['Service ID']}}" required>
+            {{service['Service ID']}}
+            {{service['Service Name']}}
         </option>
         {% endfor %}
     </select>

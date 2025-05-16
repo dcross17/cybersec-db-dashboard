@@ -1,7 +1,7 @@
 {% extends "main.j2" %}
 {% block content %}
 
-<h1>DeviceServices</h1>
+<h1>Device Services</h1>
 
 {# READ table #}
 <table>
@@ -18,14 +18,14 @@
     <tbody>
         {% for deviceService in deviceServices %}
         <tr>
-            <td>{{ deviceService['deviceServiceID'] }}</td>
-            <td>{{ deviceService['deviceID'] }}</td>
-            <td>{{ deviceService['serviceID'] }}</td>
+            <td>{{ deviceService['Device Service ID'] }}</td>
+            <td>{{ deviceService['Device ID'] }}</td>
+            <td>{{ deviceService['Service ID'] }}</td>
 
 
             {# DELETE form #}
             <form id="delete_deviceService_form">
-                <input type="hidden" name="delete_deviceService_id" value="{{ deviceService['deviceID'] }}">
+                <input type="hidden" name="delete_deviceService_id" value="{{ deviceService['Device ID'] }}">
                 <input type="hidden" name="delete_deviceService_name" value="{{ deviceService['deviceName'] }}">
                 <td>
                     <button type="submit">
@@ -75,8 +75,8 @@
     <select name="update_deviceService_id" id="update_deviceService_id" required>
         <option value="" disabled selected>Select a deviceService</option>
         {% for deviceService in deviceServices %}
-        <option value="{{deviceService['deviceID']}}" required>
-            {{deviceService['deviceServiceID']}}
+        <option value="{{deviceService['Device ID']}}" required>
+            {{deviceService['Device Service ID']}}
         </option>
         {% endfor %}
     </select>

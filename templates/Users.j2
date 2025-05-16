@@ -25,18 +25,18 @@
     <tbody>
         {% for user in users %}
         <tr>
-            <td>{{ user['userID'] }}</td>
-            <td>{{ user['firstName'] }}</td>
-            <td>{{ user['lastName'] }}</td>
-            <td>{{ user['email'] }}</td>
-            <td>{{ user['department'] }}</td>
-            <td>{{ user['role'] }}</td>
+            <td>{{ user['User ID'] }}</td>
+            <td>{{ user['First Name'] }}</td>
+            <td>{{ user['Last Name'] }}</td>
+            <td>{{ user['Email'] }}</td>
+            <td>{{ user['Department'] }}</td>
+            <td>{{ user['Role'] }}</td>
 
 
             {# DELETE form #}
             <form id="delete_user_form">
-                <input type="hidden" name="delete_user_id" value="{{ user['userID'] }}">
-                <input type="hidden" name="delete_user_name" value="{{ user['firstName'] }} {{ user['lastName'] }}">
+                <input type="hidden" name="delete_user_id" value="{{ user['User ID'] }}">
+                <input type="hidden" name="delete_user_name" value="{{ user['First Name'] }} {{ user['Last Name'] }}">
                 <td>
                     <button type="submit">
                         Delete
@@ -80,10 +80,10 @@
     <select name="update_user_id" id="update_user_id" required>
         <option value="" disabled selected>Select a User</option>
         {% for user in users %}
-        <option value="{{user['userID']}}" required>
-            {{user['userID']}}
-            {{user['firstName']}}
-            {{user['lastName']}}
+        <option value="{{user['User ID']}}" required>
+            {{user['User ID']}}
+            {{user['First Name']}}
+            {{user['Last Name']}}
         </option>
         {% endfor %}
     </select>

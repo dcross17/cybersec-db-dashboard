@@ -25,19 +25,19 @@
     <tbody>
         {% for response in responses %}
         <tr>
-            <td>{{ response['responseID'] }}</td>
-            <td>{{ response['incidentID'] }}</td>
-            <td>{{ response['userID'] }}</td>
-            <td>{{ response['timeStarted'] }}</td>
-            <td>{{ response['timeEnded'] }}</td>
-            <td>{{ response['actionPerformed'] }}</td>
-            <td>{{ response['status'] }}</td>
+            <td>{{ response['Response ID'] }}</td>
+            <td>{{ response['Incident ID'] }}</td>
+            <td>{{ response['User ID'] }}</td>
+            <td>{{ response['Time Started'] }}</td>
+            <td>{{ response['Time Ended'] }}</td>
+            <td>{{ response['Action Performed'] }}</td>
+            <td>{{ response['Status'] }}</td>
 
             
 
             {# DELETE form #}
             <form id="delete_incident_form">
-                <input type="hidden" name="delete_incident_id" value="{{ response['responseID'] }}">
+                <input type="hidden" name="delete_incident_id" value="{{ response['Response ID'] }}">
                 <td>
                     <button type="submit">
                         Delete
@@ -79,8 +79,8 @@
     <select name="update_responseID" id="update_responseID" required>
         <option value="" disabled selected>Select a Response</option>
         {% for response in responses %}
-        <option value="{{response['responseID']}}">
-            {{response['responseID']}}
+        <option value="{{response['Response ID']}}">
+            {{response['Response ID']}}
         </option>
         {% endfor %}
     </select>
