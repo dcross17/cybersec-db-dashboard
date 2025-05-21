@@ -10,12 +10,46 @@
 from flask import Flask, render_template, request, redirect
 import database.db_connector as db
 
-PORT = 50124
+PORT = 50122
 
 app = Flask(__name__)
 
 # ########################################
 # ########## ROUTE HANDLERS
+
+# RESET ROUTE
+# Citation for the following code:
+# Date: 5/20/25
+# Copied from /OR/ Adapted from /OR/ Based on 
+# Adapted from the CUD Operations exploration with a small amount of copilot, described below
+# Source URL: www.m365.cloud.microsoft
+# If AI tools were used: The online line that copilot helped with was the callproc. All other code
+# was adapted from our class materials. I could not figure out how to call a procedure with a cursor in this
+# context. Prompt used: "How do I call a stored procedure with a cursor in a route handler in Flask?"
+@app.route("/reset", methods=["POST"])
+def reset():
+    try:
+        dbConnection = db.connectDB()
+    except Exception as e:
+        print(f"Error connecting to database: {e}")
+        return "An error occurred while connecting to the database.", 500
+
+    try:
+        cursor = dbConnection.cursor()
+        cursor.callproc("sp_ResetDB")
+        dbConnection.commit()
+
+        print("Database reset successfully.")
+
+        return redirect("/")
+    except Exception as e:
+        print(f"Error resetting database: {e}")
+        return "An error occurred while resetting the database.", 500
+    
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
 
 # READ ROUTES
 @app.route("/", methods=["GET"])
@@ -26,6 +60,7 @@ def home():
     except Exception as e:
         print(f"Error rendering page: {e}")
         return "An error occurred while rendering the page.", 500
+    
 
 # get users
 @app.route("/Users", methods=["GET"])
