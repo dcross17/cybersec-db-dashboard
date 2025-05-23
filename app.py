@@ -26,6 +26,8 @@ app = Flask(__name__)
 # If AI tools were used: The online line that copilot helped with was the callproc. All other code
 # was adapted from our class materials. I could not figure out how to call a procedure with a cursor in this
 # context. Prompt used: "How do I call a stored procedure with a cursor in a route handler in Flask?"
+
+# reset route
 @app.route("/reset", methods=["POST"])
 def reset():
     try:
