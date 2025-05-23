@@ -27,9 +27,9 @@
 
 
             {# DELETE form #}
-            <form id="delete_device_form">
-                <input type="hidden" name="delete_device_id" value="{{ device['deviceID'] }}">
-                <input type="hidden" name="delete_device_name" value="{{ device['deviceName'] }}">
+            <form id="delete_device_form" method="POST" action = "/Devices/delete">
+                <input type="hidden" name="delete_device_id" value="{{ device['Device ID'] }}">
+                <input type="hidden" name="delete_device_name" value="{{ device['Device Name'] }}">
                 <td>
                     <button type="submit">
                         Delete

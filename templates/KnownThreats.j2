@@ -27,9 +27,9 @@
 
 
             {# DELETE form #}
-            <form id="delete_knownThreat_form">
-                <input type="hidden" name="delete_knownThreat_id" value="{{ knownThreat['threatID'] }}">
-                <input type="hidden" name="delete_knownThreat_name" value="{{ knownThreat['name'] }}">
+            <form id="delete_knownThreat_form" method="POST" action = "/KnownThreats/delete">
+                <input type="hidden" name="delete_knownThreat_id" value="{{ knownThreat['Threat ID'] }}">
+                <input type="hidden" name="delete_knownThreat_name" value="{{ knownThreat['Name'] }}">
                 <td>
                     <button type="submit">
                         Delete

@@ -100,10 +100,15 @@ def Incidents():
 
         incidents = db.query(dbConnection, query1).fetchall()
         
+        # Query to get all incidents so we can display them in the dropdown
+        query2 = "SELECT KnownThreats.threatID, KnownThreats.name " \
+        "FROM KnownThreats;"
+        threats = db.query(dbConnection, query2).fetchall()
 
         # Render the incidents j2 file, and also send the renderer
         return render_template(
-            "Incidents.j2", incidents=incidents
+            "Incidents.j2", incidents=incidents,
+            threats=threats
         )
 
     except Exception as e:
@@ -127,10 +132,22 @@ def IncidentDevices():
 
         incidentDevices = db.query(dbConnection, query1).fetchall()
         
+        # Query to get all incidents so we can display them in the dropdown
+        query2 = "SELECT Incidents.incidentID " \
+        "FROM Incidents;"
+        incidents = db.query(dbConnection, query2).fetchall()
+
+        # Query to get all devices so we can display them in the dropdown
+        query3 = "SELECT Devices.deviceID, Devices.deviceName " \
+        "FROM Devices " \
+        "ORDER BY Devices.deviceID ASC;"
+        devices = db.query(dbConnection, query3).fetchall()
 
         # Render the incidents j2 file, and also send the renderer
         return render_template(
-            "IncidentDevices.j2", incidentDevices=incidentDevices
+            "IncidentDevices.j2", incidentDevices=incidentDevices,
+            incidents=incidents,
+            devices=devices
         )
 
     except Exception as e:
@@ -217,12 +234,14 @@ def DeviceServices():
         deviceServices = db.query(dbConnection, query1).fetchall()
 
         query2 = "SELECT deviceID, deviceName " \
-        "FROM Devices; " \
+        "FROM Devices " \
+        "ORDER BY deviceID ASC; " \
 
         devices = db.query(dbConnection, query2).fetchall()
 
         query3 = "SELECT serviceID, serviceName " \
-        "FROM Services; " \
+        "FROM Services " \
+        "ORDER BY serviceID ASC;" \
 
         services = db.query(dbConnection, query3).fetchall()
 
@@ -297,7 +316,250 @@ def KnownThreats():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+# DELETE ROUTES START
+@app.route("/Users/delete", methods=["POST"])
+def delete_user():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
 
+        # Get the userID from the form
+        userID = request.form["delete_user_id"]
+        userName = request.form["delete_user_name"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_DeleteUser(%s);"
+        cursor.execute(query1, (userID,))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"DELETE Users. ID: {userID} Name: {userName}")
+
+        # Redirect to the Users page
+        return redirect("/Users")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+@app.route("/Incidents/delete", methods=["POST"])
+def delete_incident():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the incidentID from the form
+        incidentID = request.form["delete_incident_id"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_DeleteIncident(%s);"
+        cursor.execute(query1, (incidentID,))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"DELETE Incidents. ID: {incidentID}")
+
+        # Redirect to the Users page
+        return redirect("/Incidents")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+@app.route("/IncidentDevices/delete", methods=["POST"])
+def delete_incidentDevice():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the incidentID from the form
+        incidentDeviceID = request.form["delete_incidentDevice_id"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_DeleteIncidentDevice(%s);"
+        cursor.execute(query1, (incidentDeviceID,))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"DELETE IncidentDevice ID: {incidentDeviceID}")
+
+        # Redirect to the Users page
+        return redirect("/IncidentDevices")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+@app.route("/Responses/delete", methods=["POST"])
+def delete_response():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the incidentID from the form
+        responseID = request.form["delete_response_id"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_DeleteResponse(%s);"
+        cursor.execute(query1, (responseID,))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"DELETE Responses. ID: {responseID}")
+
+        # Redirect to the Users page
+        return redirect("/Responses")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+@app.route("/Devices/delete", methods=["POST"])
+def delete_device():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the incidentID from the form
+        deviceID = request.form["delete_device_id"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_DeleteDevice(%s);"
+        cursor.execute(query1, (deviceID,))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"DELETE Devices. ID: {deviceID}")
+
+        # Redirect to the Users page
+        return redirect("/Devices")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+@app.route("/DeviceServices/delete", methods=["POST"])
+def delete_deviceService():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the incidentID from the form
+        deviceServiceID = request.form["delete_deviceService_id"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_DeleteDeviceService(%s);"
+        cursor.execute(query1, (deviceServiceID,))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"DELETE DeviceServices. ID: {deviceServiceID}")
+
+        # Redirect to the Users page
+        return redirect("/DeviceServices")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+@app.route("/Services/delete", methods=["POST"])
+def delete_service():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the incidentID from the form
+        serviceID = request.form["delete_service_id"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_DeleteService(%s);"
+        cursor.execute(query1, (serviceID,))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"DELETE Services. ID: {serviceID}")
+
+        # Redirect to the Users page
+        return redirect("/Services")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+@app.route("/KnownThreats/delete", methods=["POST"])
+def delete_knownThreat():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the incidentID from the form
+        threatID = request.form["delete_knownThreat_id"]
+        threatName = request.form["delete_knownThreat_name"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_DeleteKnownThreat(%s);"
+        cursor.execute(query1, (threatID,))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"DELETE KnownThreats. ID: {threatID}")
+
+        # Redirect to the Users page
+        return redirect("/KnownThreats")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+# DELETE ROUTES END
 
 # ########################################
 # ########## LISTENER

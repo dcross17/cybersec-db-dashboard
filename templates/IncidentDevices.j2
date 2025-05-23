@@ -32,8 +32,8 @@
             
 
             {# DELETE form #}
-            <form id="delete_incident_form">
-                <input type="hidden" name="delete_incident_id" value="{{ incidentDevice['Device ID'] }}">
+            <form id="delete_incidentDevice_form"  method="POST" action = "/IncidentDevices/delete">
+                <input type="hidden" name="delete_incidentDevice_id" value="{{ incidentDevice['Incident Devices ID'] }}">
                 <td>
                     <button type="submit">
                         Delete
@@ -48,15 +48,28 @@
 {# CREATE form #}
 <h2>Create an IncidentDevice Intersection</h2>
 <form class="cuForm" id="create_incident_form">
-    
-    <label for="create_incidentDevicesID">Incident Devices ID: </label>
-    <input type="number" name="create_incidentDevicesID" id="create_incidentDevicesID" required>
 
     <label for="create_incidentID">Incident ID: </label>
-    <input type="number" name="create_incidentID" id="create_incidentID" required>
+    <select name="create_incident_id" id="create_incident_id" required>
+        <option value="" disabled selected>Select an Incident</option>
+        {% for incident in incidents %}
+        <option value="{{incident['incidentID']}}" required>
+            {{incident['incidentID']}}
+        </option>
+        {% endfor %}
+    </select>
+
 
     <label for="create_deviceID">Device ID: </label>
-    <input type="number" name="create_deviceID" id="create_deviceID" required>
+    <select name="create_device_id" id="create_device_id" required>
+        <option value="" disabled selected>Select an Incident</option>
+        {% for device in devices %}
+        <option value="{{device['deviceID']}}" required>
+            {{device['deviceID']}} - {{device['deviceName']}}
+        </option>
+        {% endfor %}
+    </select>
+
 
     <input type="submit">
 </form>
@@ -66,13 +79,35 @@
 <form class="cuForm" id="update_incident_form">
 
     <label for="update_incidentDevicesID">Incident Devices ID: </label>
-    <input type="number" name="update_incidentDevicesID" id="update_incidentDevicesID" required>
+    <select name="update_incidentDevices_id" id="update_incidentDevices_id" required>
+        <option value="" disabled selected>Select an IncidentDevice</option>
+        {% for incidentDevice in incidentDevices %}
+        <option value="{{incidentDevice['Incident Devices ID']}}" required>
+            {{incidentDevice['Incident Devices ID']}}
+        </option>
+        {% endfor %}
+    </select>
 
     <label for="update_incidentID">Incident ID: </label>
-    <input type="number" name="update_incidentID" id="update_incidentID" required>
+    <select name="update_incident_id" id="update_incident_id" required>
+        <option value="" disabled selected>Select an Incident</option>
+        {% for incident in incidents %}
+        <option value="{{incident['incidentID']}}" required>
+            {{incident['incidentID']}}
+        </option>
+        {% endfor %}
+    </select>
+
 
     <label for="update_deviceID">Device ID: </label>
-    <input type="number" name="update_deviceID" id="update_deviceID" required>
+    <select name="update_device_id" id="update_device_id" required>
+        <option value="" disabled selected>Select an Incident</option>
+        {% for device in devices %}
+        <option value="{{device['deviceID']}}" required>
+            {{device['deviceID']}} - {{device['deviceName']}}
+        </option>
+        {% endfor %}
+    </select>
 
 
     <input type="submit">

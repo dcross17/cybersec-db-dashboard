@@ -1,183 +1,570 @@
--- ###############
--- RESET Database to sample data
--- ###############
-DROP PROCEDURE IF EXISTS sp_ResetDB;
+# Citation for the following function:
+# Date: 5/6/25
+# Adapted from Exploation - Web Application Technology
+# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-web-application-technology-2?module_item_id=25352948
 
-DELIMITER //
-CREATE PROCEDURE sp_ResetDB()
-BEGIN
 
-    -- Table drops for testing purposes
-    DROP TABLE IF EXISTS DeviceServices;
-    DROP TABLE IF EXISTS IncidentDevices;
-    DROP TABLE IF EXISTS Responses;
-    DROP TABLE IF EXISTS Incidents;
-    DROP TABLE IF EXISTS Devices;
-    DROP TABLE IF EXISTS KnownThreats;
-    DROP TABLE IF EXISTS Services;
-    DROP TABLE IF EXISTS Users;
+# ########################################
+# ########## SETUP
 
-    -- Table Creation
+from flask import Flask, render_template, request, redirect
+import database.db_connector as db
 
-    -- Users table
-    CREATE TABLE Users (
-        userID INT AUTO_INCREMENT not NULL UNIQUE,
-        firstName VARCHAR(100) not NULL,
-        lastName VARCHAR(100) not NULL,
-        email VARCHAR(200) not NULL UNIQUE,
-        department VARCHAR(100),
-        role ENUM('admin', 'user') not NULL,
+PORT = 50122
 
-        PRIMARY KEY (userID)
-    );
+app = Flask(__name__)
 
-    -- Services table
-    CREATE TABLE Services (
-        serviceID INT AUTO_INCREMENT not NULL UNIQUE,
-        serviceName VARCHAR(100) not NULL UNIQUE,
-        port INT,
-        protocol ENUM('TCP', 'UDP', 'Other'),
+# ########################################
+# ########## ROUTE HANDLERS
 
-        PRIMARY KEY (serviceID)
-    );
+# RESET ROUTE
+# Citation for the following code:
+# Date: 5/20/25
+# Copied from /OR/ Adapted from /OR/ Based on 
+# Adapted from the CUD Operations exploration with a small amount of copilot, described below
+# Source URL: www.m365.cloud.microsoft
+# If AI tools were used: The online line that copilot helped with was the callproc. All other code
+# was adapted from our class materials. I could not figure out how to call a procedure with a cursor in this
+# context. Prompt used: "How do I call a stored procedure with a cursor in a route handler in Flask?"
+@app.route("/reset", methods=["POST"])
+def reset():
+    try:
+        dbConnection = db.connectDB()
+    except Exception as e:
+        print(f"Error connecting to database: {e}")
+        return "An error occurred while connecting to the database.", 500
 
-    -- KnownThreats table
-    CREATE TABLE KnownThreats (
-        threatID INT AUTO_INCREMENT not NULL UNIQUE,
-        name VARCHAR(100) not NULL,
-        type ENUM('Malware', 'Exploit', 'Tool', 'Other'),
-        description TEXT,
-        dateFirstSeen DATETIME,
-        dateLastSeen DATETIME,
+    try:
+        cursor = dbConnection.cursor()
+        cursor.callproc("sp_ResetDB")
+        dbConnection.commit()
 
-        PRIMARY KEY (threatID)
-    );
+        print("Database reset successfully.")
 
-    -- Devices table
-    CREATE TABLE Devices (
-        deviceID INT AUTO_INCREMENT not NULL UNIQUE,
-        deviceName VARCHAR(100) not NULL UNIQUE,
-        IPAddress VARCHAR(100) not NULL UNIQUE,
-        deviceType ENUM('Server', 'PC', 'VM', 'Other'),
-        status ENUM('Active', 'Offline', 'Disabled'),
-        assignedTo INT,
+        return redirect("/")
+    except Exception as e:
+        print(f"Error resetting database: {e}")
+        return "An error occurred while resetting the database.", 500
+    
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
 
-        FOREIGN KEY (assignedTo) REFERENCES Users(userID) ON DELETE CASCADE ON UPDATE CASCADE,
+# READ ROUTES
+@app.route("/", methods=["GET"])
+def home():
+    try:
+        return render_template("home.j2")
 
-        PRIMARY KEY (deviceID)
-    );
+    except Exception as e:
+        print(f"Error rendering page: {e}")
+        return "An error occurred while rendering the page.", 500
+    
 
-    -- Incidents table
-    CREATE TABLE Incidents (
-        incidentID INT AUTO_INCREMENT not NULL UNIQUE,
-        timeOccurred DATETIME not NULL,
-        description TEXT,
-        priority INT,
-        status ENUM('Not Started', 'In Progress', 'Completed'),
-        threatID INT,
+# get users
+@app.route("/Users", methods=["GET"])
+def Users():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
 
-        FOREIGN KEY (threatID) REFERENCES KnownThreats(threatID) ON DELETE CASCADE ON UPDATE CASCADE,
+        # Create and execute our queries
+        query1 = "SELECT Users.userID as 'User ID', Users.firstName as 'First Name', Users.lastName as 'Last Name', Users.email as Email, Users.department as Department, Users.role as 'Role' " \
+        "FROM Users;"
+        users = db.query(dbConnection, query1).fetchall()
+        
 
-        PRIMARY KEY (incidentID)
-    );
+        # Render the users j2 file, and also send the renderer
+        return render_template(
+            "Users.j2", users=users
+        )
 
-    -- Responses table
-    CREATE TABLE Responses (
-        responseID INT AUTO_INCREMENT not NULL UNIQUE,
-        incidentID INT,
-        userID INT,
-        timeStarted DATETIME,
-        timeEnded DATETIME,
-        actionPerformed TEXT,
-        status ENUM('Not Started', 'In Progress', 'Completed'),
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
 
-        FOREIGN KEY (incidentID) REFERENCES Incidents(incidentID) ON DELETE CASCADE ON UPDATE CASCADE,
-        FOREIGN KEY (userID) REFERENCES Users(userID) ON DELETE CASCADE ON UPDATE CASCADE,
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
 
-        PRIMARY KEY (responseID)
+# get incidents
+@app.route("/Incidents", methods=["GET"])
+def Incidents():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
 
-    );
+        # Create and execute our queries
+        query1 = "SELECT Incidents.incidentID as 'Incident ID', Incidents.timeOccurred as 'Time Occurred', Incidents.description as 'Description', Incidents.priority as Priority, Incidents.status as 'Status', Incidents.threatID as 'Threat ID' " \
+        "FROM Incidents;"
 
-    -- IncidentDevices table
-    CREATE TABLE IncidentDevices (
-        incidentDevicesID INT AUTO_INCREMENT,
-        incidentID INT,
-        deviceID INT,
+        incidents = db.query(dbConnection, query1).fetchall()
+        
+        # Query to get all incidents so we can display them in the dropdown
+        query2 = "SELECT KnownThreats.threatID, KnownThreats.name " \
+        "FROM KnownThreats;"
+        threats = db.query(dbConnection, query2).fetchall()
 
-        FOREIGN KEY (incidentID) REFERENCES Incidents(incidentID) ON DELETE CASCADE ON UPDATE CASCADE,
-        FOREIGN KEY (deviceID) REFERENCES Devices(deviceID) ON DELETE CASCADE ON UPDATE CASCADE,
+        # Render the incidents j2 file, and also send the renderer
+        return render_template(
+            "Incidents.j2", incidents=incidents,
+            threats=threats
+        )
 
-        PRIMARY KEY (incidentDevicesID)
-    );
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
 
-    -- DeviceServices
-    CREATE TABLE DeviceServices (
-        deviceServiceID INT AUTO_INCREMENT,
-        deviceID INT,
-        serviceID INT,
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
 
-        FOREIGN KEY (deviceID) REFERENCES Devices(deviceID) ON DELETE CASCADE ON UPDATE CASCADE,
-        FOREIGN KEY (serviceID) REFERENCES Services(serviceID) ON DELETE CASCADE ON UPDATE CASCADE,
+# get IncidentDevices
+@app.route("/IncidentDevices", methods=["GET"])
+def IncidentDevices():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
 
-        PRIMARY KEY (deviceServiceID)
-    );
+        # Create and execute our queries
+        query1 = "SELECT IncidentDevices.incidentDevicesID as 'Incident Devices ID', IncidentDevices.incidentID as 'Incident ID', IncidentDevices.deviceID as 'Device ID' "\
+        "FROM IncidentDevices;"
 
-    INSERT INTO Users (firstName, lastName, email, department, role)
-    VALUES
-    ('John', 'Doe', 'johndoe@gmail.com', 'IT', 'admin'),
-    ('Demetrius', 'Cross', 'user1@gmail.com', 'IT', 'user'),
-    ('Dawson', 'Herrington', 'user2@gmail.com', 'IT', 'user'),
-    ('Jane', 'Smith', 'admin2@gmail.com', 'HR', 'admin');
+        incidentDevices = db.query(dbConnection, query1).fetchall()
+        
+        # Query to get all incidents so we can display them in the dropdown
+        query2 = "SELECT Incidents.incidentID " \
+        "FROM Incidents;"
+        incidents = db.query(dbConnection, query2).fetchall()
 
-    INSERT INTO Services (serviceName, port, protocol)
-    VALUES
-    ('HTTP', 80, 'TCP'),
-    ('HTTPS', 443, 'TCP'),
-    ('FTP', 21, 'TCP'),
-    ('SSH', 22, 'TCP'),
-    ('DNS', 53, 'UDP');
+        # Query to get all devices so we can display them in the dropdown
+        query3 = "SELECT Devices.deviceID, Devices.deviceName " \
+        "FROM Devices " \
+        "ORDER BY Devices.deviceID ASC;"
+        devices = db.query(dbConnection, query3).fetchall()
 
-    INSERT INTO KnownThreats (name, type, description, dateFirstSeen, dateLastSeen)
-    VALUES
-    ('WannaCry', 'Malware', 'Ransomware that encrypts files and demands payment.', '2025-03-01 00:00:00', '2025-04-15 00:00:00'),
-    ('SQL Injection', 'Exploit', 'Code injection technique that exploits a security vulnerability.', '2024-12-25 00:00:00', '2025-01-01 00:00:00'),
-    ('Phishing', 'Tool', 'Fraudulent attempt to obtain sensitive information.', '2024-10-09 00:00:00', '2025-03-02 00:00:00'),
-    ('DDoS Attack', 'Other', 'Distributed denial-of-service attack.', '2024-07-01 00:00:00', '2024-11-26 12:34:56');
+        # Render the incidents j2 file, and also send the renderer
+        return render_template(
+            "IncidentDevices.j2", incidentDevices=incidentDevices,
+            incidents=incidents,
+            devices=devices
+        )
 
-    INSERT INTO Devices (deviceName, IPAddress, deviceType, status, assignedTo)
-    VALUES
-    ('Server1', 'deviceserver1.local', 'Server', 'Active', 1),
-    ('PC1', 'devicepc1.local', 'PC', 'Active', 2),
-    ('VM1', 'devicevm1.local', 'VM', 'Offline', 3),
-    ('Router1', 'devicerouter1.local', 'Other', 'Disabled', 4);
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
 
-    INSERT INTO Incidents (timeOccurred, description, priority, status, threatID)
-    VALUES
-    ('2025-03-01 12:00:00', 'WannaCry ransomware detected on server.', 1, 'In Progress', 1),
-    ('2024-12-25 15:30:00', 'SQL Injection attempt on web application.', 2, 'Not Started', 2),
-    ('2024-10-09 09:00:00', 'Phishing email reported by user.', 3, 'Completed', 3),
-    ('2024-07-01 18:00:00', 'DDoS attack detected on network.', 1, 'In Progress', 4);
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
 
-    INSERT INTO Responses (incidentID, userID, timeStarted, timeEnded, actionPerformed, status)
-    VALUES
-    (1, 1, '2025-03-01 12:30:00', '2025-03-01 14:00:00', 'Isolated server and initiated malware scan.', 'Completed'),
-    (2, 2, '2024-12-25 16:00:00', '2024-12-25 17:00:00', 'Reviewed logs and implemented security patch.', 'Completed'),
-    (3, 3, '2024-10-09 10:00:00', '2024-10-09 11:00:00', 'Informed users and blocked sender.', 'Completed'),
-    (4, 4, '2024-07-01 19:00:00', NULL, 'Mitigated attack and monitored traffic.', 'In Progress');
+# get responses
+@app.route("/Responses", methods=["GET"])
+def Responses():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
 
-    INSERT INTO IncidentDevices (incidentID, deviceID)
-    VALUES
-    (1, 1),
-    (2, 2),
-    (3, 3),
-    (4, 4);
+        # Create and execute our queries
+        query1 = "SELECT Responses.responseID as 'Response ID', Responses.incidentID as 'Incident ID', Responses.userID as 'User ID', Responses.timeStarted as 'Time Started', Responses.timeEnded as 'Time Ended', Responses.actionPerformed as 'Action Performed', Responses.status as 'Status' "\
+        "FROM Responses;"
 
-    INSERT INTO DeviceServices (deviceID, serviceID)
-    VALUES
-    (1, 1),
-    (1, 2),
-    (2, 3),
-    (3, 4);
+        responses = db.query(dbConnection, query1).fetchall()
+        
 
-END //
-DELIMITER ;
+        # Render the incidents j2 file, and also send the renderer
+        return render_template(
+            "Responses.j2", responses=responses
+        )
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+# get devices
+@app.route("/Devices", methods=["GET"])
+def Devices():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+
+        # Create and execute our queries
+        query1 = "SELECT Devices.deviceID as 'Device ID', Devices.deviceName as 'Device Name', Devices.IPAddress as 'IP Address', Devices.deviceType as 'Device Type', Devices.status as 'Status', Devices.assignedTo as 'Assigned To' " \
+        "FROM Devices " \
+        
+        devices = db.query(dbConnection, query1).fetchall()
+
+
+        # Query to get all users so we can display them in the dropdown
+        query2 = "SELECT Users.userID, Users.firstName, Users.lastName " \
+        "FROM Users;"
+        users = db.query(dbConnection, query2).fetchall()
+
+
+        # Render the users j2 file, and also send the renderer
+        return render_template(
+            "Devices.j2", 
+            devices=devices,
+            users=users
+        )
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+# get deviceServices
+@app.route("/DeviceServices", methods=["GET"])
+def DeviceServices():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+
+        # Create and execute our queries
+        query1 = "SELECT DeviceServices.deviceServiceID as 'Device Service ID', DeviceServices.deviceID as 'Device ID', DeviceServices.serviceID as 'Service ID' " \
+        "FROM DeviceServices; " \
+        
+        deviceServices = db.query(dbConnection, query1).fetchall()
+
+        query2 = "SELECT deviceID, deviceName " \
+        "FROM Devices " \
+        "ORDER BY deviceID ASC; " \
+
+        devices = db.query(dbConnection, query2).fetchall()
+
+        query3 = "SELECT serviceID, serviceName " \
+        "FROM Services " \
+        "ORDER BY serviceID ASC;" \
+
+        services = db.query(dbConnection, query3).fetchall()
+
+        # Render the users j2 file, and also send the renderer
+        return render_template(
+            "DeviceServices.j2", 
+            deviceServices=deviceServices,
+            devices=devices,
+            services=services
+        )
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+# get services
+@app.route("/Services", methods=["GET"])
+def Services():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+
+        # Create and execute our queries
+        query1 = "SELECT Services.serviceID as 'Service ID', Services.serviceName as 'Service Name', Services.port as Port, Services.protocol as Protocol " \
+        "FROM Services " \
+        
+        services = db.query(dbConnection, query1).fetchall()
+
+        # Render the users j2 file, and also send the renderer
+        return render_template(
+            "Services.j2", 
+            services=services,
+        )
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+# get knownThreats
+@app.route("/KnownThreats", methods=["GET"])
+def KnownThreats():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+
+        # Create and execute our queries
+        query1 = "SELECT KnownThreats.threatID as 'Threat ID', KnownThreats.name as 'Name', KnownThreats.type as 'Type', KnownThreats.description as 'Description', KnownThreats.dateFirstSeen as 'Date First Seen', KnownThreats.dateLastSeen as 'Date Last Seen' " \
+        "FROM KnownThreats " \
+        
+        knownThreats = db.query(dbConnection, query1).fetchall()
+
+        # Render the users j2 file, and also send the renderer
+        return render_template(
+            "KnownThreats.j2", 
+            knownThreats=knownThreats,
+        )
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+# DELETE ROUTES START
+@app.route("/Users/delete", methods=["POST"])
+def delete_user():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the userID from the form
+        userID = request.form["delete_user_id"]
+        userName = request.form["delete_user_name"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_DeleteUser(%s);"
+        cursor.execute(query1, (userID,))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"DELETE Users. ID: {userID} Name: {userName}")
+
+        # Redirect to the Users page
+        return redirect("/Users")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+@app.route("/Incidents/delete", methods=["POST"])
+def delete_incident():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the incidentID from the form
+        incidentID = request.form["delete_incident_id"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_DeleteIncident(%s);"
+        cursor.execute(query1, (incidentID,))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"DELETE Incidents. ID: {incidentID}")
+
+        # Redirect to the Users page
+        return redirect("/Incidents")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+@app.route("/IncidentDevices/delete", methods=["POST"])
+def delete_incidentDevice():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the incidentID from the form
+        incidentDeviceID = request.form["delete_incidentDevice_id"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_DeleteIncidentDevice(%s);"
+        cursor.execute(query1, (incidentDeviceID,))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"DELETE IncidentDevice ID: {incidentDeviceID}")
+
+        # Redirect to the Users page
+        return redirect("/IncidentDevices")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+@app.route("/Responses/delete", methods=["POST"])
+def delete_response():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the incidentID from the form
+        responseID = request.form["delete_response_id"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_DeleteResponse(%s);"
+        cursor.execute(query1, (responseID,))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"DELETE Responses. ID: {responseID}")
+
+        # Redirect to the Users page
+        return redirect("/Responses")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+@app.route("/Devices/delete", methods=["POST"])
+def delete_device():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the incidentID from the form
+        deviceID = request.form["delete_device_id"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_DeleteDevice(%s);"
+        cursor.execute(query1, (deviceID,))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"DELETE Devices. ID: {deviceID}")
+
+        # Redirect to the Users page
+        return redirect("/Devices")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+@app.route("/DeviceServices/delete", methods=["POST"])
+def delete_deviceService():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the incidentID from the form
+        deviceServiceID = request.form["delete_deviceService_id"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_DeleteDeviceService(%s);"
+        cursor.execute(query1, (deviceServiceID,))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"DELETE DeviceServices. ID: {deviceServiceID}")
+
+        # Redirect to the Users page
+        return redirect("/DeviceServices")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+@app.route("/Services/delete", methods=["POST"])
+def delete_service():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the incidentID from the form
+        serviceID = request.form["delete_service_id"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_DeleteService(%s);"
+        cursor.execute(query1, (serviceID,))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"DELETE Services. ID: {serviceID}")
+
+        # Redirect to the Users page
+        return redirect("/Services")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+@app.route("/KnownThreats/delete", methods=["POST"])
+def delete_knownThreat():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the incidentID from the form
+        threatID = request.form["delete_knownThreat_id"]
+        threatName = request.form["delete_knownThreat_name"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_DeleteKnownThreat(%s);"
+        cursor.execute(query1, (threatID,))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"DELETE KnownThreats. ID: {threatID}")
+
+        # Redirect to the Users page
+        return redirect("/KnownThreats")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+# DELETE ROUTES END
+
+# ########################################
+# ########## LISTENER
+
+if __name__ == "__main__":
+    app.run(
+        port=PORT, debug=True
+    )  # debug is an optional parameter. Behaves like nodemon in Node.

@@ -25,9 +25,9 @@
 
 
             {# DELETE form #}
-            <form id="delete_service_form">
-                <input type="hidden" name="delete_service_id" value="{{ service['serviceID'] }}">
-                <input type="hidden" name="delete_service_name" value="{{ service['serviceName'] }}">
+            <form id="delete_service_form" method="POST" action = "/Services/delete">
+                <input type="hidden" name="delete_service_id" value="{{ service['Service ID'] }}">
+                <input type="hidden" name="delete_service_name" value="{{ service['Service Name'] }}">
                 <td>
                     <button type="submit">
                         Delete
@@ -68,7 +68,7 @@
         <option value="" disabled selected>Select a Service</option>
         {% for service in services %}
         <option value="{{service['Service ID']}}" required>
-            {{service['Service ID']}}
+            {{service['Service ID']}} -
             {{service['Service Name']}}
         </option>
         {% endfor %}

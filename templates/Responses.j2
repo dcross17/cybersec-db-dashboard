@@ -36,8 +36,8 @@
             
 
             {# DELETE form #}
-            <form id="delete_incident_form">
-                <input type="hidden" name="delete_incident_id" value="{{ response['Response ID'] }}">
+            <form id="delete_incident_form"  method="POST" action = "/Responses/delete">
+                <input type="hidden" name="delete_response_id" value="{{ response['Response ID'] }}">
                 <td>
                     <button type="submit">
                         Delete

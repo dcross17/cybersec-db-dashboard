@@ -34,7 +34,7 @@
 
 
             {# DELETE form #}
-            <form id="delete_user_form">
+            <form id="delete_user_form" method="POST" action = "/Users/delete">
                 <input type="hidden" name="delete_user_id" value="{{ user['User ID'] }}">
                 <input type="hidden" name="delete_user_name" value="{{ user['First Name'] }} {{ user['Last Name'] }}">
                 <td>

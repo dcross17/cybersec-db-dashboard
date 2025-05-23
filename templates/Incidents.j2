@@ -34,7 +34,7 @@
 
 
             {# DELETE form #}
-            <form id="delete_incident_form">
+            <form id="delete_incident_form"  method="POST" action = "/Incidents/delete">
                 <input type="hidden" name="delete_incident_id" value="{{ incident['Incident ID'] }}">
                 <td>
                     <button type="submit">
@@ -48,7 +48,7 @@
 </table>
 
 {# CREATE form #}
-<h2>Create a Incident</h2>
+<h2>Create an Incident</h2>
 <form class="cuForm" id="create_incident_form">
     
     <label for="create_incident_timeOccurred">Time and Date: </label>
@@ -58,7 +58,14 @@
     <input type="text" name="create_incident_description" id="create_incident_description" required>
     
     <label for="create_incident_priority">Priority: </label>
-    <input type = "number" name="create_incident_priority" id="create_incident_priority" required>
+    <select name="create_incident_priority" id="create_incident_priority" required>
+        <option value="" disabled selected>Select a Priority</option>
+        {% for incident in incidents %}
+            <option value="{{incident['priority']}}">
+                {{incident['Incident ID']}}
+            </option>
+        {% endfor %}
+    </select>
 
     <label for="create_incident_status">Status: </label>
     <select name="create_incident_status" id="create_incident_status" required>
@@ -66,18 +73,29 @@
         <option value="Not Started">Not Started</option>
         <option value="In Progress">In Progress</option>
         <option value="Completed">Completed</option>
-
     </select>
+
+    <label for="create_incident_threatID">Threat: </label>
+    <select name="update_threat_id" id="update_threat_id" required>
+        <option value="" disabled selected>Select a Threat</option>
+        {% for threat in threats %}
+        <option value="{{threat['threatID']}}">
+            {{threat['threatID']}} - {{threat['name']}}
+        </option>
+        {% endfor %}
+    </select>
+
+    
 
     <input type="submit">
 </form>
 
 {# UPDATE form #}
-<h2>Update a Incident</h2>
+<h2>Update an Incident</h2>
 <form class="cuForm" id="update_incident_form">
 
     <select name="update_IncidentsID" id="update_IncidentsID" required>
-        <option value="" disabled selected>Select a Incident</option>
+        <option value="" disabled selected>Select an Incident</option>
         {% for incident in incidents %}
         <option value="{{incident['Incident ID']}}">
             {{incident['Incident ID']}}
@@ -92,7 +110,14 @@
     <input type="text" name="update_incident_description" id="update_incident_description" required>
     
     <label for="update_incident_priority">Priority: </label>
-    <input type="integer" name="update_incident_priority" id="update_incident_priority" required>
+    <select name="update_incident_priority" id="update_incident_priority" required>
+        <option value="" disabled selected>Select a Priority</option>
+        {% for incident in incidents %}
+            <option value="{{incident['priority']}}">
+                {{incident['Incident ID']}}
+            </option>
+        {% endfor %}
+    </select>
     
     <label for="update_incident_status">Status: </label>
     <select name="update_incident_status" id="update_incident_status" required>
@@ -100,6 +125,16 @@
         <option value="Not Started">Not Started</option>
         <option value="In Progress">In Progress</option>
         <option value="Completed">Completed</option>
+    </select>
+
+    <label for="update_incident_threatID">Threat: </label>
+    <select name="update_threat_id" id="update_threat_id" required>
+        <option value="" disabled selected>Select a Threat</option>
+        {% for threat in threats %}
+        <option value="{{threat['threatID']}}">
+            {{threat['threatID']}} - {{threat['name']}}
+        </option>
+        {% endfor %}
     </select>
 
     <input type="submit">
