@@ -10,7 +10,7 @@
 from flask import Flask, render_template, request, redirect
 import database.db_connector as db
 
-PORT = 50122
+PORT = 49111
 
 app = Flask(__name__)
 
@@ -388,6 +388,7 @@ def delete_incidentDevice():
 
         # Get the incidentID from the form
         incidentDeviceID = request.form["delete_incidentDevice_id"]
+        
 
         # Create and execute our queries
         query1 = "CALL sp_DeleteIncidentDevice(%s);"
@@ -562,6 +563,115 @@ def delete_knownThreat():
             dbConnection.close()
 
 # DELETE ROUTES END
+
+# UPDATE ROUTES START
+
+# update users
+@app.route("/Users/update", methods=["POST"])
+def update_users():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor() 
+
+        # get the form data
+        userID = request.form["update_user_id"]
+
+        # queries
+        query1 = "CALL sp_UpdateUser(%s, %s, %s, %s, %s, %s);"
+        cursor.execute(
+            query1,
+            (
+                userID,
+                request.form["update_user_firstName"],
+                request.form["update_user_lastName"],
+                request.form["update_user_email"],
+                request.form["update_user_department"],
+                request.form["update_user_role"]
+            )
+        )
+
+        dbConnection.commit()  # commit the changes
+
+        #redirect to the Users page
+        return redirect("/Users")
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+    finally:
+        # Close the DB connection
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+# update incidents
+@app.route("/Incidents/update", methods=["POST"])
+def update_incidents():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor() 
+
+        # get the form data
+        incidentID = request.form["update_incident_id"]
+
+        # queries
+        query1 = "CALL sp_UpdateIncident(%s, %s, %s, %s, %s, %s);"
+        cursor.execute(
+            query1,
+            (
+                incidentID,
+                request.form["update_incident_timeOccurred"],
+                request.form["update_incident_description"],
+                request.form["update_incident_priority"],
+                request.form["update_incident_status"],
+                request.form["update_incident_threatID"]
+            )
+        )
+
+        dbConnection.commit()  # commit the changes
+
+        #redirect to the Incidents page
+        return redirect("/Incidents")
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+    finally:
+        # Close the DB connection
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+# update incidentDevices
+@app.route("/IncidentDevices/update", methods=["POST"])
+def update_incidentDevices():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor() 
+
+        # get the form data
+        incidentDeviceID = request.form["update_incidentDevices_id"]
+        incidentID = request.form["update_incident_id"]
+        deviceID = request.form["update_device_id"]
+
+        # queries
+        query1 = "CALL sp_UpdateIncidentDevice(%s, %s, %s);"
+        cursor.execute(
+            query1,
+            (
+                incidentDeviceID,
+                incidentID,
+                deviceID
+            )
+        )
+
+        dbConnection.commit()  # commit the changes
+
+        #redirect to the IncidentDevices page
+        return redirect("/IncidentDevices")
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+    finally:
+        # Close the DB connection
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
 
 # ########################################
 # ########## LISTENER

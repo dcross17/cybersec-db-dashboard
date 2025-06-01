@@ -75,7 +75,7 @@
 
 {# UPDATE form #}
 <h2>Update a User</h2>
-<form class="cuForm" id="update_user_form">
+<form class="cuForm" id="update_user_form" method="POST" action="/Users/update">
     <label for="update_user_id">User to Update: </label>
     <select name="update_user_id" id="update_user_id" required>
         <option value="" disabled selected>Select a User</option>
@@ -88,6 +88,12 @@
         {% endfor %}
     </select>
 
+    <label for="update_user_firstName">First Name:</label>
+    <input type="text" name="update_user_firstName" id="update_user_firstName" required>
+
+    <label for="update_user_lastName">Last Name:</label>
+    <input type="text" name="update_user_lastName" id="update_user_lastName" required>
+
     <label for="update_user_email">Email: </label>
     <input type="email" name="update_user_email" id="update_user_email">
 
@@ -96,8 +102,8 @@
 
     <label for="update_user_role">Role: </label>
     <select name="update_user_role" id="update_user_role" required>
-        <option value="Admin">Admin</option>
-        <option value="User">User</option>
+        <option value="admin">admin</option>
+        <option value="user">user</option>
     </select>
 
     <input type="submit">

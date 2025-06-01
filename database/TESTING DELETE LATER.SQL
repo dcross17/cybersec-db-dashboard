@@ -396,49 +396,6 @@ END //
 DELIMITER ;
 
 -- update Procedures
-
--- update Users
 DROP PROCEDURE IF EXISTS sp_UpdateUser;
 DELIMITER //
-CREATE PROCEDURE sp_UpdateUser(
-    IN p_userID INT, IN p_firstName VARCHAR(100), IN p_lastName VARCHAR(100),
-    IN p_email VARCHAR(200), IN p_department VARCHAR(100), IN p_role ENUM('admin', 'user')
-)
-
-BEGIN
-    UPDATE Users SET firstName = p_firstName, lastName = p_lastName,
-    email = p_email, department = p_department, role = p_role
-    WHERE userID = p_userID;
-
-END
-DELIMITER ;
-
--- update Incidents
-DROP PROCEDURE IF EXISTS sp_UpdateIncident;
-DELIMITER //
-CREATE PROCEDURE sp_UpdateIncident(
-    IN p_incidentID INT, IN p_timeOccurred DATETIME, IN p_description TEXT,
-    IN p_priority INT, IN p_status ENUM('Not Started', 'In Progress', 'Completed'),
-    IN p_threatID INT
-)
-BEGIN
-    UPDATE Incidents SET timeOccurred = p_timeOccurred, description = p_description,
-    priority = p_priority, status = p_status, threatID = p_threatID
-    WHERE incidentID = p_incidentID;
-
-END //
-DELIMITER ;
-
--- update IncidentDevices
-DROP PROCEDURE IF EXISTS sp_UpdateIncidentDevice;
-DELIMITER //
-CREATE PROCEDURE sp_UpdateIncidentDevice(
-    IN p_incidentDevicesID INT, IN p_incidentID INT, IN p_deviceID INT
-)
-BEGIN
-    UPDATE IncidentDevices SET incidentID = p_incidentID, deviceID = p_deviceID
-    WHERE incidentDevicesID = p_incidentDevicesID;
-
-END //
-DELIMITER ;
-
+CREATE PROCEDURE sp_UpdateUser()
