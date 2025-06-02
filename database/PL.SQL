@@ -180,7 +180,7 @@ BEGIN
     (3, 4);
 END //
 
-
+DELIMITER //
 -- Delete Procedures
 CREATE PROCEDURE sp_DeleteUser(IN u_id INT)
 BEGIN
@@ -207,6 +207,7 @@ BEGIN
     COMMIT;
 
 END //
+
 
 CREATE PROCEDURE sp_DeleteIncident(IN inc_id INT)
 BEGIN
@@ -299,7 +300,7 @@ BEGIN
 
     START TRANSACTION;
 
-    DELETE FROM Device WHERE deviceID = dev_id;
+    DELETE FROM Devices WHERE deviceID = dev_id;
 
     -- Check if the user was deleted
     IF ROW_COUNT() = 0 THEN

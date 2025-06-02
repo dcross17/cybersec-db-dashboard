@@ -24,8 +24,9 @@
 
 
             {# DELETE form #}
-            <form id="delete_deviceService_form"  method="POST" action = "/DeviceServices/delete">
-                <input type="hidden" name="delete_deviceService_id" value="{{ deviceService['Device Service ID'] }}">
+            <form id="delete_deviceService_form" method="POST" action="/DeviceServices/delete">
+                <input type="hidden" name="delete_device_id" value="{{ deviceService['Device ID'] }}">
+                <input type="hidden" name="delete_service_id" value="{{ deviceService['Service ID'] }}">
                 <td>
                     <button type="submit">
                         Delete
