@@ -71,14 +71,13 @@
 
 {# UPDATE form #}
 <h2>Update a knownThreat</h2>
-<form class="cuForm" id="update_knownThreat_form">
+<form class="cuForm" id="update_knownThreat_form" method="POST" action="/KnownThreats/update">
     <label for="update_knownThreat_id">Threat to Update: </label>
     <select name="update_knownThreat_id" id="update_knownThreat_id" required>
         <option value="" disabled selected>Select a knownThreat</option>
         {% for knownThreat in knownThreats %}
-        <option value="{{knownThreat['Known Threat ID']}}" required>
-            {{knownThreat['Threat ID']}}
-            {{knownThreat['Name']}}
+        <option value="{{knownThreat['Threat ID']}}" required>
+            {{knownThreat['Threat ID']}} {{knownThreat['Name']}}
         </option>
         {% endfor %}
     </select>

@@ -62,7 +62,7 @@
 
 {# UPDATE form #}
 <h2>Update a Service</h2>
-<form class="cuForm" id="update_service_form">
+<form class="cuForm" id="update_service_form" method="POST" action="/Services/update">
     <label for="update_service_id">Service to Update: </label>
     <select name="update_service_id" id="update_service_id" required>
         <option value="" disabled selected>Select a Service</option>
@@ -81,7 +81,7 @@
     <input type="number" name="update_service_port" min = "0" max = "65535" id="update_service_port">
 
     <label for="update_service_protocol">Protocol: </label>
-    <select name="update_service_status" id="update_service_status">
+    <select name="update_service_protocol" id="update_service_protocol">
         <option value="" disabled selected>Select a protocol</option>
         <option value="TCP">TCP</option>
         <option value="UDP">UDP</option>

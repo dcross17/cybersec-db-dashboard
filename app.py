@@ -673,6 +673,181 @@ def update_incidentDevices():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+# update responses
+@app.route("/Responses/update", methods=["POST"])
+def update_responses():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor() 
+
+        # get the form data
+        responseID = request.form["update_responseID"]
+
+        # queries
+        query1 = "CALL sp_UpdateResponse(%s, %s, %s, %s, %s);"
+        cursor.execute(
+            query1,
+            (
+                responseID,
+                request.form["update_timeStarted"],
+                request.form["update_timeEnded"],
+                request.form["update_actionPerformed"],
+                request.form["update_status"]
+            )
+        )
+
+        dbConnection.commit()  # commit the changes
+
+        #redirect to the Responses page
+        return redirect("/Responses")
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+    finally:
+        # Close the DB connection
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+# update devices
+@app.route("/Devices/update", methods=["POST"])
+def update_devices():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor() 
+
+        # get the form data
+        deviceID = request.form["update_device_id"]
+
+        # queries
+        query1 = "CALL sp_UpdateDevice(%s, %s, %s, %s, %s, %s);"
+        cursor.execute(
+            query1,
+            (
+                deviceID,
+                request.form["update_device_name"],
+                request.form["update_device_ipAddress"],
+                request.form["update_device_type"],
+                request.form["update_device_status"],
+                request.form["update_device_assignedTo"]
+            )
+        )
+
+        dbConnection.commit()  # commit the changes
+
+        #redirect to the Devices page
+        return redirect("/Devices")
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+    finally:
+        # Close the DB connection
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+# update deviceServices
+@app.route("/DeviceServices/update", methods=["POST"])
+def update_deviceServices():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor() 
+
+        # get the form data
+        deviceServiceID = request.form["update_deviceService_id"]
+        
+
+        # queries
+        query1 = "CALL sp_UpdateDeviceService(%s, %s, %s);"
+        cursor.execute(
+            query1,
+            (
+                deviceServiceID,
+                request.form["update_deviceService_device"],
+                request.form["update_deviceService_service"]
+            )
+        )
+
+        dbConnection.commit()  # commit the changes
+
+        #redirect to the DeviceServices page
+        return redirect("/DeviceServices")
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+    finally:
+        # Close the DB connection
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+# update services
+@app.route("/Services/update", methods=["POST"])
+def update_services():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor() 
+
+        # get the form data
+        serviceID = request.form["update_service_id"]
+
+        # queries
+        query1 = "CALL sp_UpdateService(%s, %s, %s, %s);"
+        cursor.execute(
+            query1,
+            (
+                serviceID,
+                request.form["update_service_name"],
+                request.form["update_service_port"],
+                request.form["update_service_protocol"]
+            )
+        )
+
+        dbConnection.commit()  # commit the changes
+
+        #redirect to the Services page
+        return redirect("/Services")
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+    finally:
+        # Close the DB connection
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+# update knownThreats
+@app.route("/KnownThreats/update", methods=["POST"])
+def update_knownThreats():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor() 
+
+        # get the form data
+        threatID = request.form["update_knownThreat_id"]
+
+        # queries
+        query1 = "CALL sp_UpdateKnownThreat(%s, %s, %s, %s, %s, %s);"
+        cursor.execute(
+            query1,
+            (
+                threatID,
+                request.form["update_knownThreat_name"],
+                request.form["update_knownThreat_type"],
+                request.form["update_knownThreat_description"],
+                request.form["update_knownThreat_dateFirstSeen"],
+                request.form["update_knownThreat_dateLastSeen"]
+            )
+        )
+
+        dbConnection.commit()  # commit the changes
+
+        #redirect to the KnownThreats page
+        return redirect("/KnownThreats")
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+    finally:
+        # Close the DB connection
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
 # ########################################
 # ########## LISTENER
 

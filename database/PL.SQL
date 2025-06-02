@@ -442,3 +442,75 @@ BEGIN
 END //
 DELIMITER ;
 
+-- update Responses
+DROP PROCEDURE IF EXISTS sp_UpdateResponse;
+DELIMITER //
+CREATE PROCEDURE sp_UpdateResponse(
+    IN p_responseID INT, IN p_timeStarted DATETIME, IN p_timeEnded DATETIME,
+    IN p_actionPerformed TEXT, IN p_status ENUM('Not Started', 'In Progress', 'Completed')
+)
+BEGIN
+    UPDATE Responses SET timeStarted = p_timeStarted, timeEnded = p_timeEnded,
+    actionPerformed = p_actionPerformed, status = p_status
+    WHERE responseID = p_responseID;
+
+END //
+DELIMITER ;
+
+-- update Devices
+DROP PROCEDURE IF EXISTS sp_UpdateDevice;
+DELIMITER //
+CREATE PROCEDURE sp_UpdateDevice(
+    IN p_deviceID INT, IN p_deviceName VARCHAR(100), IN p_IPAddress VARCHAR(100),
+    IN p_deviceType ENUM('Server', 'PC', 'VM', 'Other'), IN p_status ENUM('Active', 'Offline', 'Disabled'),
+    IN p_assignedTo INT
+)
+BEGIN
+    UPDATE Devices SET deviceName = p_deviceName, IPAddress = p_IPAddress,
+    deviceType = p_deviceType, status = p_status, assignedTo = p_assignedTo
+    WHERE deviceID = p_deviceID;
+
+END //
+DELIMITER ;
+
+-- update DeviceServices
+DROP PROCEDURE IF EXISTS sp_UpdateDeviceService;
+DELIMITER //
+CREATE PROCEDURE sp_UpdateDeviceService(
+    IN p_deviceServiceID INT, IN p_deviceID INT, IN p_serviceID INT
+)
+BEGIN
+    UPDATE DeviceServices SET deviceID = p_deviceID, serviceID = p_serviceID
+    WHERE deviceServiceID = p_deviceServiceID;
+
+END //
+DELIMITER ;
+
+-- update Services
+DROP PROCEDURE IF EXISTS sp_UpdateService;
+DELIMITER //
+CREATE PROCEDURE sp_UpdateService(
+    IN p_serviceID INT, IN p_serviceName VARCHAR(100), IN p_port INT,
+    IN p_protocol ENUM('TCP', 'UDP', 'Other')
+)
+BEGIN
+    UPDATE Services SET serviceName = p_serviceName, port = p_port, protocol = p_protocol
+    WHERE serviceID = p_serviceID;
+
+END //
+DELIMITER ;
+
+-- update KnownThreats
+DROP PROCEDURE IF EXISTS sp_UpdateKnownThreat;
+DELIMITER //
+CREATE PROCEDURE sp_UpdateKnownThreat(
+    IN p_threatID INT, IN p_name VARCHAR(100), IN p_type ENUM('Malware', 'Exploit', 'Tool', 'Other'),
+    IN p_description TEXT, IN p_dateFirstSeen DATETIME, IN p_dateLastSeen DATETIME
+)
+BEGIN
+    UPDATE KnownThreats SET name = p_name, type = p_type, description = p_description,
+    dateFirstSeen = p_dateFirstSeen, dateLastSeen = p_dateLastSeen
+    WHERE threatID = p_threatID;
+
+END //
+DELIMITER ;
