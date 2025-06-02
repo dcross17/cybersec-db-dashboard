@@ -387,12 +387,11 @@ def delete_incidentDevice():
         cursor = dbConnection.cursor()
 
         # Get the incidentID from the form
-        incidentDeviceID = request.form["delete_incident_id"]
-        deviceID = request.form["delete_device_id"]
+        incidentDeviceID = request.form["delete_incidentDevice_id"]
 
         # Create and execute our queries
-        query1 = "CALL sp_DeleteIncidentDevice(%s, %s);"
-        cursor.execute(query1, (incidentDeviceID, deviceID))
+        query1 = "CALL sp_DeleteIncidentDevice(%s);"
+        cursor.execute(query1, (incidentDeviceID))
 
         # Commit the changes to the database
         dbConnection.commit()
@@ -478,17 +477,16 @@ def delete_deviceService():
         cursor = dbConnection.cursor()
 
         # Get the incidentID from the form
-        deviceID = request.form["delete_device_id"]
-        serviceID = request.form["delete_service_id"]
+        deviceServiceID = request.form["delete_deviceService_id"]
 
         # Create and execute our queries
-        query1 = "CALL sp_DeleteDeviceService(%s, %s);"
-        cursor.execute(query1, (deviceID, serviceID))
+        query1 = "CALL sp_DeleteDeviceService(%s);"
+        cursor.execute(query1, (deviceServiceID))
 
         # Commit the changes to the database
         dbConnection.commit()
 
-        print(f"DELETE DeviceServices. Device ID: {deviceID}, Service ID: {serviceID}")
+        print(f"DELETE DeviceServices. DeviceService ID: {deviceServiceID}")
         # Redirect to the Users page
         return redirect("/DeviceServices")
 

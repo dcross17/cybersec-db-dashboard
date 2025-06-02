@@ -25,6 +25,7 @@
 
             {# DELETE form #}
             <form id="delete_deviceService_form" method="POST" action="/DeviceServices/delete">
+                <input type="hidden" name="delete_deviceService_id" value="{{ deviceService['Device Service ID'] }}">
                 <input type="hidden" name="delete_device_id" value="{{ deviceService['Device ID'] }}">
                 <input type="hidden" name="delete_service_id" value="{{ deviceService['Service ID'] }}">
                 <td>
@@ -75,7 +76,7 @@
     <select name="update_deviceService_id" id="update_deviceService_id" required>
         <option value="" disabled selected>Select a deviceService</option>
         {% for deviceService in deviceServices %}
-        <option value="{{deviceService['Device ID']}}" required>
+        <option value="{{deviceService['Device Service ID']}}" required>
             {{deviceService['Device Service ID']}}
         </option>
         {% endfor %}
