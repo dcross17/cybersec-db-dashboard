@@ -49,7 +49,7 @@
 
 {# CREATE form #}
 <h2>Create an Incident</h2>
-<form class="cuForm" id="create_incident_form">
+<form class="cuForm" id="create_incident_form" method="POST" action="/Incidents/create">
     
     <label for="create_incident_timeOccurred">Time and Date: </label>
     <input type="datetime-local" name="create_incident_timeOccurred" id="create_incident_timeOccurred" required>
@@ -60,11 +60,9 @@
     <label for="create_incident_priority">Priority: </label>
     <select name="create_incident_priority" id="create_incident_priority" required>
         <option value="" disabled selected>Select a Priority</option>
-        {% for incident in incidents %}
-            <option value="{{incident['priority']}}">
-                {{incident['Incident ID']}}
-            </option>
-        {% endfor %}
+            <option value="1">1 - High</option>
+            <option value="2">2 - Medium</option>
+            <option value="3">3 - Low</option>
     </select>
 
     <label for="create_incident_status">Status: </label>
@@ -76,7 +74,7 @@
     </select>
 
     <label for="create_incident_threatID">Threat: </label>
-    <select name="update_threat_id" id="update_threat_id" required>
+    <select name="create_incident_threatID" id="create_incident_threatID" required>
         <option value="" disabled selected>Select a Threat</option>
         {% for threat in threats %}
         <option value="{{threat['threatID']}}">
@@ -112,11 +110,9 @@
     <label for="update_incident_priority">Priority: </label>
     <select name="update_incident_priority" id="update_incident_priority" required>
         <option value="" disabled selected>Select a Priority</option>
-        {% for incident in incidents %}
-            <option value="{{incident['priority']}}">
-                {{incident['Incident ID']}}
-            </option>
-        {% endfor %}
+        <option value="1">1 - High</option>
+        <option value="2">2 - Medium</option>
+        <option value="3">3 - Low</option>
     </select>
 
 

@@ -43,7 +43,7 @@
 
 {# CREATE form #}
 <h2>Create a Device</h2>
-<form class="cuForm" id="create_device_form">
+<form class="cuForm" id="create_device_form" method="POST" action="/Devices/create">
     <label for="create_device_firstName">Device Name: </label>
     <input type="text" name="create_device_name" id="create_device_name" required>
 
@@ -68,7 +68,7 @@
     </select>
 
     <label for="create_device_assignedTo">User: </label>
-    <select name="create_device_assignedTo" id="create_device_assignedTo" required>
+    <select name="create_device_assignedTo" id="create_device_assignedTo">
         <option value="" disabled selected>Select a user</option>
         {% for user in users %}
         <option value="{{user['userID']}}">

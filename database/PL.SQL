@@ -180,6 +180,12 @@ BEGIN
     (3, 4);
 END //
 
+
+
+
+
+
+
 DELIMITER //
 -- Delete Procedures
 CREATE PROCEDURE sp_DeleteUser(IN u_id INT)
@@ -207,6 +213,287 @@ BEGIN
     COMMIT;
 
 END //
+
+-- Create/Insert Procedures
+CREATE PROCEDURE sp_CreateUser(
+    IN p_firstName VARCHAR(100), IN p_lastName VARCHAR(100),
+    IN p_email VARCHAR(200), IN p_department VARCHAR(100), IN p_role ENUM('admin', 'user')
+)
+BEGIN
+    DECLARE p_id INT;
+    DECLARE error_message VARCHAR(255);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback the transaction in case of an error
+        ROLLBACK;
+        -- Optionally, you can log the error or raise a custom error message
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+
+    INSERT INTO Users (firstName, lastName, email, department, role)
+    VALUES (p_firstName, p_lastName, p_email, p_department, p_role);
+    
+
+    -- Check if the user was created
+    IF ROW_COUNT() = 0 THEN
+        set error_message = CONCAT('Failed to create user with email: ', p_email);
+        -- User not created, raise an error
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+    END IF;
+
+    -- Get the last inserted userID
+    SET p_id = LAST_INSERT_ID();
+
+    COMMIT;
+
+END //
+
+CREATE PROCEDURE sp_CreateIncident(
+    IN p_timeOccurred DATETIME, IN p_description TEXT,
+    IN p_priority INT, IN p_status ENUM('Not Started', 'In Progress', 'Completed'),
+    IN p_threatID INT
+)
+BEGIN
+    DECLARE p_id INT;
+    DECLARE error_message VARCHAR(255);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback the transaction in case of an error
+        ROLLBACK;
+        -- Optionally, you can log the error or raise a custom error message
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+
+    INSERT INTO Incidents (timeOccurred, description, priority, status, threatID)
+    VALUES (p_timeOccurred, p_description, p_priority, p_status, p_threatID);
+    
+    -- Check if the incident was created
+    IF ROW_COUNT() = 0 THEN
+        set error_message = CONCAT('Failed to create incident with description: ', p_description);
+        -- Incident not created, raise an error
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+    END IF;
+
+    -- Get the last inserted incidentID
+    SET p_id = LAST_INSERT_ID();
+
+    COMMIT;
+
+END //
+
+CREATE PROCEDURE sp_CreateIncidentDevice(
+    IN p_incidentID INT, IN p_deviceID INT
+)
+BEGIN
+    DECLARE p_id INT;
+    DECLARE error_message VARCHAR(255);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback the transaction in case of an error
+        ROLLBACK;
+        -- Optionally, you can log the error or raise a custom error message
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+
+    INSERT INTO IncidentDevices (incidentID, deviceID)
+    VALUES (p_incidentID, p_deviceID);
+    
+    -- Check if the incident device was created
+    IF ROW_COUNT() = 0 THEN
+        set error_message = CONCAT('Failed to create IncidentDevice for incidentID: ', p_incidentID, ' and deviceID: ', p_deviceID);
+        -- IncidentDevice not created, raise an error
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+    END IF;
+
+    -- Get the last inserted incidentDevicesID
+    SET p_id = LAST_INSERT_ID();
+
+    COMMIT;
+
+END //
+
+CREATE PROCEDURE sp_CreateResponse(
+    IN p_incidentID INT, IN p_userID INT, IN p_timeStarted DATETIME,
+    IN p_timeEnded DATETIME, IN p_actionPerformed TEXT,
+    IN p_status ENUM('Not Started', 'In Progress', 'Completed')
+)
+
+BEGIN
+    DECLARE p_id INT;
+    DECLARE error_message VARCHAR(255);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback the transaction in case of an error
+        ROLLBACK;
+        -- Optionally, you can log the error or raise a custom error message
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+
+    INSERT INTO Responses (incidentID, userID, timeStarted, timeEnded, actionPerformed, status)
+    VALUES (p_incidentID, p_userID, p_timeStarted, p_timeEnded, p_actionPerformed, p_status);
+    
+    -- Check if the response was created
+    IF ROW_COUNT() = 0 THEN
+        set error_message = CONCAT('Failed to create response for incidentID: ', p_incidentID);
+        -- Response not created, raise an error
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+    END IF;
+
+    -- Get the last inserted responseID
+    SET p_id = LAST_INSERT_ID();
+
+    COMMIT;
+
+END //
+
+CREATE PROCEDURE sp_CreateDevice(
+    IN p_deviceName VARCHAR(100), IN p_IPAddress VARCHAR(100),
+    IN p_deviceType ENUM('Server', 'PC', 'VM', 'Other'),
+    IN p_status ENUM('Active', 'Offline', 'Disabled'), IN p_assignedTo INT
+)
+
+BEGIN
+    DECLARE p_id INT;
+    DECLARE error_message VARCHAR(255);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback the transaction in case of an error
+        ROLLBACK;
+        -- Optionally, you can log the error or raise a custom error message
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+
+    INSERT INTO Devices (deviceName, IPAddress, deviceType, status, assignedTo)
+    VALUES (p_deviceName, p_IPAddress, p_deviceType, p_status, p_assignedTo);
+    
+    -- Check if the device was created
+    IF ROW_COUNT() = 0 THEN
+        set error_message = CONCAT('Failed to create device with name: ', p_deviceName);
+        -- Device not created, raise an error
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+    END IF;
+
+    -- Get the last inserted deviceID
+    SET p_id = LAST_INSERT_ID();
+
+    COMMIT;
+
+END //
+
+CREATE PROCEDURE sp_CreateDeviceService(
+    IN p_deviceID INT, IN p_serviceID INT
+)
+
+BEGIN
+    DECLARE p_id INT;
+    DECLARE error_message VARCHAR(255);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback the transaction in case of an error
+        ROLLBACK;
+        -- Optionally, you can log the error or raise a custom error message
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+
+    INSERT INTO DeviceServices (deviceID, serviceID)
+    VALUES (p_deviceID, p_serviceID);
+    
+    -- Check if the device service was created
+    IF ROW_COUNT() = 0 THEN
+        set error_message = CONCAT('Failed to create DeviceService for deviceID: ', p_deviceID, ' and serviceID: ', p_serviceID);
+        -- DeviceService not created, raise an error
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+    END IF;
+
+    -- Get the last inserted deviceServiceID
+    SET p_id = LAST_INSERT_ID();
+
+    COMMIT;
+
+END //
+
+CREATE PROCEDURE sp_CreateService(
+    IN p_serviceName VARCHAR(100), IN p_port INT,
+    IN p_protocol ENUM('TCP', 'UDP', 'Other')
+)
+
+BEGIN
+    DECLARE p_id INT;
+    DECLARE error_message VARCHAR(255);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback the transaction in case of an error
+        ROLLBACK;
+        -- Optionally, you can log the error or raise a custom error message
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+
+    INSERT INTO Services (serviceName, port, protocol)
+    VALUES (p_serviceName, p_port, p_protocol);
+    
+    -- Check if the service was created
+    IF ROW_COUNT() = 0 THEN
+        set error_message = CONCAT('Failed to create service with name: ', p_serviceName);
+        -- Service not created, raise an error
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+    END IF;
+
+    -- Get the last inserted serviceID
+    SET p_id = LAST_INSERT_ID();
+
+    COMMIT;
+
+END //
+
+CREATE PROCEDURE sp_CreateKnownThreat(
+    IN p_name VARCHAR(100), IN p_type ENUM('Malware', 'Exploit', 'Tool', 'Other'),
+    IN p_description TEXT, IN p_dateFirstSeen DATETIME, IN p_dateLastSeen DATETIME
+)
+
+BEGIN
+    DECLARE p_id INT;
+    DECLARE error_message VARCHAR(255);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Rollback the transaction in case of an error
+        ROLLBACK;
+        -- Optionally, you can log the error or raise a custom error message
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+
+    INSERT INTO KnownThreats (name, type, description, dateFirstSeen, dateLastSeen)
+    VALUES (p_name, p_type, p_description, p_dateFirstSeen, p_dateLastSeen);
+    
+    -- Check if the known threat was created
+    IF ROW_COUNT() = 0 THEN
+        set error_message = CONCAT('Failed to create known threat with name: ', p_name);
+        -- Known threat not created, raise an error
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+    END IF;
+
+    -- Get the last inserted threatID
+    SET p_id = LAST_INSERT_ID();
+
+    COMMIT;
+
+END //
+
 
 
 CREATE PROCEDURE sp_DeleteIncident(IN inc_id INT)

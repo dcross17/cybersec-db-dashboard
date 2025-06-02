@@ -51,13 +51,33 @@
 
 {# CREATE form #}
 <h2>Create a Response</h2>
-<form class="cuForm" id="create_response_form">
+<form class="cuForm" id="create_response_form" method="POST" action="/Responses/create">
+
+    <label for="create_response_userID">User: </label>
+    <select name="create_response_userID" id="create_response_userID" required>
+        <option value="" disabled selected>Select a User</option>
+        {% for user in users %}
+        <option value="{{user['userID']}}" required>
+            {{user['userID']}} - {{user['firstName']}} {{user['lastName']}}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label for="create_response_incidentID">Incident: </label>
+    <select name="create_response_incidentID" id="create_response_incidentID" required>
+        <option value="" disabled selected>Select an Incident</option>
+        {% for incident in incidents %}
+        <option value="{{incident['incidentID']}}" required>
+            {{incident['incidentID']}} - {{incident['description']}}
+        </option>
+        {% endfor %}
+    </select>
     
     <label for="create_response_timeStarted">Time Started: </label>
     <input type="datetime-local" name="create_response_timeStarted" id="create_response_timeStarted" required>
 
     <label for="create_response_timeEnded">Time Ended: </label>
-    <input type="datetime-local" name="create_response_timeEnded" id="create_response_timeEnded" required>
+    <input type="datetime-local" name="create_response_timeEnded" id="create_response_timeEnded">
 
     <label for="create_response_actionPerformed">Action Performed: </label>
     <input type="text" name="create_response_actionPerformed" id="create_response_actionPerformed" required>

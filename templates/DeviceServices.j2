@@ -41,9 +41,9 @@
 
 {# CREATE form #}
 <h2>Create DeviceService</h2>
-<form class="cuForm" id="create_deviceService_form">
-    <label for="create_deviceService_firstName">deviceService Name: </label>
-    <select name="create_deviceService_name" id="create_deviceService_name" required>
+<form class="cuForm" id="create_deviceService_form" method="POST" action="/DeviceServices/create">
+    <label for="create_deviceService_firstName">DeviceService Name: </label>
+    <select name="create_deviceService_device" id="create_deviceService_device" required>
         <option value="" disabled selected>Select a Device</option>
         {% for device in devices %}
         <option value="{{device['deviceID']}}" required>
@@ -53,7 +53,7 @@
         {% endfor %}
     </select>
 
-    <select name="create_deviceService_serviceID" id="create_deviceService_serviceID" required>
+    <select name="create_deviceService_service" id="create_deviceService_service" required>
         <option value="" disabled selected>Select a Service</option>
         {% for service in services %}
         <option value="{{service['serviceID']}}" required>

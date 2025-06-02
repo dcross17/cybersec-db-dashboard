@@ -173,10 +173,21 @@ def Responses():
 
         responses = db.query(dbConnection, query1).fetchall()
         
+        # Query to get all users so we can display them in the dropdown
+        query2 = "SELECT Users.userID, Users.firstName, Users.lastName " \
+        "FROM Users;"
+        users = db.query(dbConnection, query2).fetchall()
+
+        # Query to get all incidents so we can display them in the dropdown
+        query3 = "SELECT Incidents.incidentID, Incidents.description FROM Incidents;"
+        incidents = db.query(dbConnection, query3).fetchall()
 
         # Render the incidents j2 file, and also send the renderer
         return render_template(
-            "Responses.j2", responses=responses
+            "Responses.j2", 
+            responses=responses,
+            users=users,
+            incidents=incidents
         )
 
     except Exception as e:
@@ -317,6 +328,283 @@ def KnownThreats():
         # Close the DB connection, if it exists
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
+
+
+# CREATE ROUTES START
+@app.route("/Users/create", methods=["POST"])
+def create_user():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the form data
+        firstName = request.form["create_user_firstName"]
+        lastName = request.form["create_user_lastName"]
+        email = request.form["create_user_email"]
+        department = request.form["create_user_department"]
+        role = request.form["create_user_role"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_CreateUser(%s, %s, %s, %s, %s);"
+        cursor.execute(query1, (firstName, lastName, email, department, role))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"CREATE Users. Name: {firstName} {lastName}")
+
+        # Redirect to the Users page
+        return redirect("/Users")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+@app.route("/Devices/create", methods=["POST"])
+def create_device():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the form data
+        deviceName = request.form["create_device_name"]
+        ipAddress = request.form["create_device_ipAddress"]
+        deviceType = request.form["create_device_type"]
+        status = request.form["create_device_status"]
+        assignedTo = request.form["create_device_assignedTo"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_CreateDevice(%s, %s, %s, %s, %s);"
+        cursor.execute(query1, (deviceName, ipAddress, deviceType, status, assignedTo))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"CREATE Devices. Name: {deviceName}")
+
+        # Redirect to the Devices page
+        return redirect("/Devices")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+
+@app.route("/Incidents/create", methods=["POST"])
+def create_incident():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the form data
+        timeOccurred = request.form["create_incident_timeOccurred"]
+        description = request.form["create_incident_description"]
+        priority = request.form["create_incident_priority"]
+        status = request.form["create_incident_status"]
+        threatID = request.form["create_incident_threatID"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_CreateIncident(%s, %s, %s, %s, %s);"
+        cursor.execute(query1, (timeOccurred, description, priority, status, threatID))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"CREATE Incidents. Description: {description}")
+
+        # Redirect to the Incidents page
+        return redirect("/Incidents")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+
+@app.route("/IncidentDevices/create", methods=["POST"])
+def create_incidentDevice():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the form data
+        incidentID = request.form["create_incident_id"]
+        deviceID = request.form["create_device_id"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_CreateIncidentDevice(%s, %s);"
+        cursor.execute(query1, (incidentID, deviceID))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"CREATE IncidentDevices. Incident ID: {incidentID}, Device ID: {deviceID}")
+
+        # Redirect to the IncidentDevices page
+        return redirect("/IncidentDevices")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+@app.route("/Responses/create", methods=["POST"])
+def create_response():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the form data
+        incidentID = request.form["create_response_incidentID"]
+        userID = request.form["create_response_userID"]
+        timeStarted = request.form["create_response_timeStarted"]
+        timeEnded = request.form["create_response_timeEnded"]
+        actionPerformed = request.form["create_response_actionPerformed"]
+        status = request.form["create_response_status"]
+        
+        # Create and execute our queries
+        query1 = "CALL sp_CreateResponse(%s, %s, %s, %s, %s, %s);"
+        cursor.execute(query1, (incidentID, userID, timeStarted, timeEnded, actionPerformed, status))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"CREATE Responses. Incident ID: {incidentID}, User ID: {userID}")
+
+        # Redirect to the Responses page
+        return redirect("/Responses")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+@app.route("/DeviceServices/create", methods=["POST"])
+def create_deviceService():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the form data
+        deviceID = request.form["create_deviceService_device"]
+        serviceID = request.form["create_deviceService_service"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_CreateDeviceService(%s, %s);"
+        cursor.execute(query1, (deviceID, serviceID))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"CREATE DeviceServices. Device ID: {deviceID}, Service ID: {serviceID}")
+
+        # Redirect to the DeviceServices page
+        return redirect("/DeviceServices")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+@app.route("/Services/create", methods=["POST"])
+def create_service():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the form data
+        serviceName = request.form["create_service_name"]
+        port = request.form["create_service_port"]
+        protocol = request.form["create_service_protocol"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_CreateService(%s, %s, %s);"
+        cursor.execute(query1, (serviceName, port, protocol))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"CREATE Services. Name: {serviceName}")
+
+        # Redirect to the Services page
+        return redirect("/Services")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+@app.route("/KnownThreats/create", methods=["POST"])
+def create_knownThreat():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get the form data
+        name = request.form["create_knownThreat_name"]
+        threatType = request.form["create_knownThreat_type"]
+        description = request.form["create_knownThreat_description"]
+        dateFirstSeen = request.form["create_knownThreat_dateFirstSeen"]
+        dateLastSeen = request.form["create_knownThreat_dateLastSeen"]
+
+        # Create and execute our queries
+        query1 = "CALL sp_CreateKnownThreat(%s, %s, %s, %s, %s);"
+        cursor.execute(query1, (name, threatType, description, dateFirstSeen, dateLastSeen))
+
+        # Commit the changes to the database
+        dbConnection.commit()
+
+        print(f"CREATE KnownThreats. Name: {name}")
+
+        # Redirect to the KnownThreats page
+        return redirect("/KnownThreats")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+
+# CREATE ROUTES END
+
+
+
+
+
 
 # DELETE ROUTES START
 @app.route("/Users/delete", methods=["POST"])
