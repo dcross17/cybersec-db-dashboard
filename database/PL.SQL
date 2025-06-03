@@ -539,7 +539,7 @@ BEGIN
 
     -- Check if the user was deleted
     IF ROW_COUNT() = 0 THEN
-        set error_message = CONCAT('No matching record found in IncidentDevices table for incidentID: ', inc_id, ' and deviceID: ', dev_id);
+        set error_message = CONCAT('No matching record found in IncidentDevices table for deviceID: ', incDev_id);
         -- User not found, raise an error
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
     END IF;
@@ -617,7 +617,7 @@ BEGIN
 
     -- Check if the user was deleted
     IF ROW_COUNT() = 0 THEN
-        set error_message = CONCAT('No matching record found in DeviceServices table for deviceID: ', dev_id, ' and serviceID: ', serv_id);
+        set error_message = CONCAT('No matching record found in DeviceServices table for ServiceID: ', devServ_id);
         -- User not found, raise an error
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
     END IF;
