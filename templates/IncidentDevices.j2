@@ -18,7 +18,7 @@
         <option value="" disabled selected>Select an Incident</option>
         {% for incident in incidents %}
         <option value="{{incident['incidentID']}}" required>
-            {{incident['incidentID']}}
+            {{incident['incidentID']}} - {{incident['description']}}
         </option>
         {% endfor %}
     </select>
@@ -45,9 +45,10 @@
     <label for="update_incidentDevicesID">Incident Devices ID: </label>
     <select name="update_incidentDevices_id" id="update_incidentDevices_id" required>
         <option value="" disabled selected>Select an IncidentDevice</option>
-        {% for incidentDevice in incidentDevices %}
-        <option value="{{incidentDevice['Incident Devices ID']}}" required>
-            {{incidentDevice['Incident Devices ID']}}
+        {% for idInfo in incDevInfo%}
+        <option value="{{idInfo['incidentDevicesID']}}" required>
+            {{idInfo['incidentDevicesID']}} -
+            {{idInfo['Incident Description']}} - {{idInfo['Device Name']}}
         </option>
         {% endfor %}
     </select>
@@ -57,7 +58,7 @@
         <option value="" disabled selected>Select an Incident</option>
         {% for incident in incidents %}
         <option value="{{incident['incidentID']}}" required>
-            {{incident['incidentID']}}
+            {{incident['incidentID']}} - {{incident['description']}}
         </option>
         {% endfor %}
     </select>
@@ -76,7 +77,6 @@
 
     <input type="submit">
 </form>
-
 {# Citation for the following code: #}
 {# Date: 6/2/25 #}
 {# Copied from /OR/ Adapted from /OR/ Based on #}
@@ -87,43 +87,47 @@
 {# Prompt: When keying into a list as seen in code: ***Removed for brevity, see below*, how can I use a conditional #}
 {# To handle a potentially empty data set. After some refinements we arrived at the solution you see below, which is only #}
 {# slighty modified from the original code #}
-
 {# READ table #}
 <table>
     <thead>
+        {# For the table header row, we print the DB attribute names #}
         <tr>
-            {% if incidentDevices|length > 0 %}
-                {% for key in incidentDevices[0].keys() %}
-                    <th>{{ key }}</th>
-                {% endfor %}
-                <th></th>
-            {% else %}
-                <th>No data available</th>
-            {% endif %}
+         {% if incidentDevices|length > 0 %}
+            {% for key in incidentDevices[0].keys() %}
+            <th>{{ key }}</th>
+            {% endfor %}
+        {% else %}            
+            <th colspan="6">No affected devices found.</th>
+        {% endif %}
         </tr>
     </thead>
+
     <tbody>
         {% if incidentDevices|length > 0 %}
-            {% for incidentDevice in incidentDevices %}
-            <tr>
-                <td>{{ incidentDevice['Incident Devices ID'] }}</td>
-                <td>{{ incidentDevice['Incident ID'] }}</td>
-                <td>{{ incidentDevice['Device ID'] }}</td>
+        {% for incidentDevice in incidentDevices %}
+        <tr>
+            <td>{{ incidentDevice['Incident Devices ID'] }}</td>
+            <td>{{ incidentDevice['Incident ID'] }}</td>
+            <td>{{ incidentDevice['Device ID'] }}</td>
+
+            
+
+            {# DELETE form #}
+            <form id="delete_incidentDevice_form" method="POST" action="/IncidentDevices/delete">
+                <input type="hidden" name="delete_incidentDevice_id" value="{{ incidentDevice['Incident Devices ID'] }}">
+                <input type="hidden" name="delete_incident_id" value="{{ incidentDevice['Incident ID'] }}">
+                <input type="hidden" name="delete_device_id" value="{{ incidentDevice['Device ID'] }}">
                 <td>
-                    <form id="delete_incidentDevice_form" method="POST" action="/IncidentDevices/delete" style="display:inline;">
-                        <input type="hidden" name="delete_incidentDevice_id" value="{{ incidentDevice['Incident Devices ID'] }}">
-                        <input type="hidden" name="delete_incident_id" value="{{ incidentDevice['Incident ID'] }}">
-                        <input type="hidden" name="delete_device_id" value="{{ incidentDevice['Device ID'] }}">
-                        <button type="submit">Delete</button>
-                    </form>
+                    <button type="submit">
+                        Delete
+                    </button>
                 </td>
-            </tr>
-            {% endfor %}
-        {% else %}
-            <tr>
-                <td colspan="4">No incident devices found.</td>
-            </tr>
+            </form>
+        </tr>
+        {% endfor %}
+
         {% endif %}
+
     </tbody>
 </table>
 

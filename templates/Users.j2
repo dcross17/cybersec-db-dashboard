@@ -9,6 +9,7 @@
 {% block content %}
 
 <h1>Users</h1>
+
 {# CREATE form #}
 <h2>Create a User</h2>
 <form class="cuForm" id="create_user_form" method="POST" action = "/Users/create">
@@ -70,7 +71,6 @@
     <input type="submit">
 </form>
 
-
 {# Citation for the following code: #}
 {# Date: 6/2/25 #}
 {# Copied from /OR/ Adapted from /OR/ Based on #}
@@ -81,48 +81,54 @@
 {# Prompt: When keying into a list as seen in code: ***Removed for brevity, see below*, how can I use a conditional #}
 {# To handle a potentially empty data set. After some refinements we arrived at the solution you see below, which is only #}
 {# slighty modified from the original code #}
-
+{# READ table #}
 {# READ table #}
 <table>
     <thead>
+        {# For the table header row, we print the DB attribute names #}
         <tr>
-            {% if users|length > 0 %}
-                {% for key in users[0].keys() %}
-                <th>{{ key }}</th>
-                {% endfor %}
-            {% else %}
-                <th>No data available</th>
-            {% endif %}
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
         {% if users|length > 0 %}
-            {% for user in users %}
-            <tr>
-                <td>{{ user['User ID'] }}</td>
-                <td>{{ user['First Name'] }}</td>
-                <td>{{ user['Last Name'] }}</td>
-                <td>{{ user['Email'] }}</td>
-                <td>{{ user['Department'] }}</td>
-                <td>{{ user['Role'] }}</td>
-                <form id="delete_user_form" method="POST" action = "/Users/delete">
-                    <input type="hidden" name="delete_user_id" value="{{ user['User ID'] }}">
-                    <input type="hidden" name="delete_user_name" value="{{ user['First Name'] }} {{ user['Last Name'] }}">
-                    <td>
-                        <button type="submit">
-                            Delete
-                        </button>
-                    </td>
-                </form>
-            </tr>
+            {% for key in users[0].keys() %}
+            <th>{{ key }}</th>
             {% endfor %}
         {% else %}
-            <tr>
-                <td colspan="7">No users found.</td>
-            </tr>
+            <th colspan="6">No users found.</th>
+        {% endif %}
+        </tr>
+    </thead>
+    
+    <tbody>
+        {% if users %}
+        {% for user in users %}
+        <tr>
+            <td>{{ user['User ID'] }}</td>
+            <td>{{ user['First Name'] }}</td>
+            <td>{{ user['Last Name'] }}</td>
+            <td>{{ user['Email'] }}</td>
+            <td>{{ user['Department'] }}</td>
+            <td>{{ user['Role'] }}</td>
+
+
+            {# DELETE form #}
+            <form id="delete_user_form" method="POST" action = "/Users/delete">
+                <input type="hidden" name="delete_user_id" value="{{ user['User ID'] }}">
+                <input type="hidden" name="delete_user_name" value="{{ user['First Name'] }} {{ user['Last Name'] }}">
+                <td>
+                    <button type="submit">
+                        Delete
+                    </button>
+                </td>
+            </form>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="6">No users found.</td>
+        </tr>
         {% endif %}
     </tbody>
+    
+
 </table>
 
 

@@ -522,7 +522,7 @@ BEGIN
 
 END //
 
-CREATE PROCEDURE sp_DeleteIncidentDevice(IN inc_id INT, IN dev_id INT)
+CREATE PROCEDURE sp_DeleteIncidentDevice(IN incDev_id INT)
 BEGIN
     DECLARE error_message VARCHAR(255);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -535,7 +535,7 @@ BEGIN
 
     START TRANSACTION;
 
-    DELETE FROM IncidentDevices WHERE incidentID = inc_id AND deviceID = dev_id;
+    DELETE FROM IncidentDevices WHERE incidentDevicesID = incDev_id;
 
     -- Check if the user was deleted
     IF ROW_COUNT() = 0 THEN
@@ -600,7 +600,7 @@ BEGIN
 
 END //
 
-CREATE PROCEDURE sp_DeleteDeviceService(IN dev_id INT, IN serv_id INT)
+CREATE PROCEDURE sp_DeleteDeviceService(IN devServ_id INT)
 BEGIN
     DECLARE error_message VARCHAR(255);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -613,7 +613,7 @@ BEGIN
 
     START TRANSACTION;
 
-    DELETE FROM DeviceServices WHERE deviceID = dev_id AND serviceID = serv_id;
+    DELETE FROM DeviceServices WHERE deviceServiceID = devServ_id;
 
     -- Check if the user was deleted
     IF ROW_COUNT() = 0 THEN
