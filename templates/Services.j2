@@ -2,43 +2,6 @@
 {% block content %}
 
 <h1>Services</h1>
-
-{# READ table #}
-<table>
-    <thead>
-        {# For the table header row, we print the DB attribute names #}
-        <tr>
-            {% for key in services[0].keys() %}
-            <th>{{ key }}</th>
-            {% endfor %}
-            <th></th>
-        </tr>
-    </thead>
-
-    <tbody>
-        {% for service in services %}
-        <tr>
-            <td>{{ service['Service ID'] }}</td>
-            <td>{{ service['Service Name'] }}</td>
-            <td>{{ service['Port'] }}</td>
-            <td>{{ service['Protocol'] }}</td>
-
-
-            {# DELETE form #}
-            <form id="delete_service_form" method="POST" action = "/Services/delete">
-                <input type="hidden" name="delete_service_id" value="{{ service['Service ID'] }}">
-                <input type="hidden" name="delete_service_name" value="{{ service['Service Name'] }}">
-                <td>
-                    <button type="submit">
-                        Delete
-                    </button>
-                </td>
-            </form>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
 {# CREATE form #}
 <h2>Create a Service</h2>
 <form class="cuForm" id="create_service_form" method="POST" action="/Services/create">
@@ -90,5 +53,56 @@
 
     <input type="submit">
 </form>
+
+{# Citation for the following code: #}
+{# Date: 6/2/25 #}
+{# Copied from /OR/ Adapted from /OR/ Based on #}
+{# Copilot helped me solve a hunch, details below. #}
+{# Source URL: www.m365.cloud.microsoft #}
+{# If AI tools were used: #}
+{# I realized that an empty list would result in an index error but was unsure on how to fix it/embed the proper logic. #}
+{# Prompt: When keying into a list as seen in code: ***Removed for brevity, see below*, how can I use a conditional #}
+{# To handle a potentially empty data set. After some refinements we arrived at the solution you see below, which is only #}
+{# slighty modified from the original code #}
+{# READ table #}
+<table>
+    <thead>
+        <tr>
+            {% if services|length > 0 %}
+                {% for key in services[0].keys() %}
+                    <th>{{ key }}</th>
+                {% endfor %}
+                <th></th>
+            {% else %}
+                <th>No data available</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% if services|length > 0 %}
+            {% for service in services %}
+            <tr>
+                <td>{{ service['Service ID'] }}</td>
+                <td>{{ service['Service Name'] }}</td>
+                <td>{{ service['Port'] }}</td>
+                <td>{{ service['Protocol'] }}</td>
+                <td>
+                    <form id="delete_service_form" method="POST" action="/Services/delete" style="display:inline;">
+                        <input type="hidden" name="delete_service_id" value="{{ service['Service ID'] }}">
+                        <input type="hidden" name="delete_service_name" value="{{ service['Service Name'] }}">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="5">No services found.</td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
+
+
 
 {% endblock %}

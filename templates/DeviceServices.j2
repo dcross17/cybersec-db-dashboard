@@ -2,43 +2,6 @@
 {% block content %}
 
 <h1>Device Services</h1>
-
-{# READ table #}
-<table>
-    <thead>
-        {# For the table header row, we print the DB attribute names #}
-        <tr>
-            {% for key in deviceServices[0].keys() %}
-            <th>{{ key }}</th>
-            {% endfor %}
-            <th></th>
-        </tr>
-    </thead>
-
-    <tbody>
-        {% for deviceService in deviceServices %}
-        <tr>
-            <td>{{ deviceService['Device Service ID'] }}</td>
-            <td>{{ deviceService['Device ID'] }}</td>
-            <td>{{ deviceService['Service ID'] }}</td>
-
-
-            {# DELETE form #}
-            <form id="delete_deviceService_form" method="POST" action="/DeviceServices/delete">
-                <input type="hidden" name="delete_deviceService_id" value="{{ deviceService['Device Service ID'] }}">
-                <input type="hidden" name="delete_device_id" value="{{ deviceService['Device ID'] }}">
-                <input type="hidden" name="delete_service_id" value="{{ deviceService['Service ID'] }}">
-                <td>
-                    <button type="submit">
-                        Delete
-                    </button>
-                </td>
-            </form>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
 {# CREATE form #}
 <h2>Create DeviceService</h2>
 <form class="cuForm" id="create_deviceService_form" method="POST" action="/DeviceServices/create">
@@ -106,5 +69,57 @@
 
     <input type="submit">
 </form>
+
+{# Citation for the following code: #}
+{# Date: 6/2/25 #}
+{# Copied from /OR/ Adapted from /OR/ Based on #}
+{# Copilot helped me solve a hunch, details below. #}
+{# Source URL: www.m365.cloud.microsoft #}
+{# If AI tools were used: #}
+{# I realized that an empty list would result in an index error but was unsure on how to fix it/embed the proper logic. #}
+{# Prompt: When keying into a list as seen in code: ***Removed for brevity, see below*, how can I use a conditional #}
+{# To handle a potentially empty data set. After some refinements we arrived at the solution you see below, which is only #}
+{# slighty modified from the original code #}
+
+{# READ table #}
+<table>
+    <thead>
+        <tr>
+            {% if deviceServices|length > 0 %}
+                {% for key in deviceServices[0].keys() %}
+                    <th>{{ key }}</th>
+                {% endfor %}
+                <th></th>
+            {% else %}
+                <th>No data available</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% if deviceServices|length > 0 %}
+            {% for deviceService in deviceServices %}
+            <tr>
+                <td>{{ deviceService['Device Service ID'] }}</td>
+                <td>{{ deviceService['Device ID'] }}</td>
+                <td>{{ deviceService['Service ID'] }}</td>
+                <td>
+                    <form id="delete_deviceService_form" method="POST" action="/DeviceServices/delete" style="display:inline;">
+                        <input type="hidden" name="delete_deviceService_id" value="{{ deviceService['Device Service ID'] }}">
+                        <input type="hidden" name="delete_device_id" value="{{ deviceService['Device ID'] }}">
+                        <input type="hidden" name="delete_service_id" value="{{ deviceService['Service ID'] }}">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="4">No device services found.</td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
+
+
 
 {% endblock %}
