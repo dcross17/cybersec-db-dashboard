@@ -123,6 +123,7 @@ def Incidents():
             dbConnection.close()
 
 # get IncidentDevices
+# get IncidentDevices
 @app.route("/IncidentDevices", methods=["GET"])
 def IncidentDevices():
     try:
@@ -135,7 +136,7 @@ def IncidentDevices():
         incidentDevices = db.query(dbConnection, query1).fetchall()
         
         # Query to get all incidents so we can display them in the dropdown
-        query2 = "SELECT Incidents.incidentID " \
+        query2 = "SELECT Incidents.incidentID, Incidents.description " \
         "FROM Incidents;"
         incidents = db.query(dbConnection, query2).fetchall()
 
@@ -145,11 +146,20 @@ def IncidentDevices():
         "ORDER BY Devices.deviceID ASC;"
         devices = db.query(dbConnection, query3).fetchall()
 
+        #Get join query to get all incidentDevices with device names and incident descriptions and threat names
+        query4 = "SELECT IncidentDevices.incidentDevicesID, Incidents.description as 'Incident Description', Devices.deviceName as 'Device Name' " \
+        "FROM IncidentDevices " \
+        "JOIN Incidents ON IncidentDevices.incidentID = Incidents.incidentID " \
+        "JOIN Devices ON IncidentDevices.deviceID = Devices.deviceID;"
+        incDevInfo = db.query(dbConnection, query4).fetchall()
+
+
         # Render the incidents j2 file, and also send the renderer
         return render_template(
             "IncidentDevices.j2", incidentDevices=incidentDevices,
             incidents=incidents,
-            devices=devices
+            devices=devices,
+            incDevInfo=incDevInfo
         )
 
     except Exception as e:
