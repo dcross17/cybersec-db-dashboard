@@ -124,7 +124,7 @@
                 <td>{{ knownThreat['Date First Seen'] }}</td>
                 <td>{{ knownThreat['Date Last Seen'] }}</td>
                 <td>
-                    <form id="delete_knownThreat_form" method="POST" action="/KnownThreats/delete" style="display:inline;">
+                    <form id="delete_knownThreat_form" method="POST" action="/KnownThreats/delete" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this device?');">
                         <input type="hidden" name="delete_knownThreat_id" value="{{ knownThreat['Threat ID'] }}">
                         <input type="hidden" name="delete_knownThreat_name" value="{{ knownThreat['Name'] }}">
                         <button type="submit">Delete</button>

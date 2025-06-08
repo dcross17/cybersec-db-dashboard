@@ -148,7 +148,7 @@
             {# DELETE form #}
             <form id="delete_user_form" method="POST" action = "/Users/delete">
                 <input type="hidden" name="delete_user_id" value="{{ user['User ID'] }}">
-                <input type="hidden" name="delete_user_name" value="{{ user['First Name'] }} {{ user['Last Name'] }}">
+                <input type="hidden" name="delete_user_name" value="{{ user['First Name'] }} {{ user['Last Name'] }}" onsubmit="return confirm('Are you sure you want to delete this device?');">
                 <td>
                     <button type="submit">
                         Delete

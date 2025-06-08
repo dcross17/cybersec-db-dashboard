@@ -121,7 +121,7 @@
                 <td>{{ service['Port'] }}</td>
                 <td>{{ service['Protocol'] }}</td>
                 <td>
-                    <form id="delete_service_form" method="POST" action="/Services/delete" style="display:inline;">
+                    <form id="delete_service_form" method="POST" action="/Services/delete" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this device?');">
                         <input type="hidden" name="delete_service_id" value="{{ service['Service ID'] }}">
                         <input type="hidden" name="delete_service_name" value="{{ service['Service Name'] }}">
                         <button type="submit">Delete</button>

@@ -161,7 +161,7 @@
                 <td>{{ device['Status'] }}</td>
                 <td>{{ device['Assigned To'] }}</td>
                 <td>
-                    <form id="delete_device_form" method="POST" action="/Devices/delete" style="display:inline;">
+                    <form id="delete_device_form" method="POST" action="/Devices/delete" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this device?');">
                         <input type="hidden" name="delete_device_id" value="{{ device['Device ID'] }}">
                         <input type="hidden" name="delete_device_name" value="{{ device['Device Name'] }}">
                         <button type="submit">Delete</button>

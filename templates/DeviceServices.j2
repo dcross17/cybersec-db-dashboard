@@ -118,7 +118,7 @@
                 <td>{{ deviceService['Device ID'] }}</td>
                 <td>{{ deviceService['Service ID'] }}</td>
                 <td>
-                    <form id="delete_deviceService_form" method="POST" action="/DeviceServices/delete" style="display:inline;">
+                    <form id="delete_deviceService_form" method="POST" action="/DeviceServices/delete" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this device?');">
                         <input type="hidden" name="delete_deviceService_id" value="{{ deviceService['Device Service ID'] }}">
                         <input type="hidden" name="delete_device_id" value="{{ deviceService['Device ID'] }}">
                         <input type="hidden" name="delete_service_id" value="{{ deviceService['Service ID'] }}">

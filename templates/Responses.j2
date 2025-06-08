@@ -163,7 +163,7 @@
                 <td>{{ response['Action Performed'] }}</td>
                 <td>{{ response['Status'] }}</td>
                 <td>
-                    <form id="delete_incident_form" method="POST" action="/Responses/delete" style="display:inline;">
+                    <form id="delete_incident_form" method="POST" action="/Responses/delete" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this device?');">
                         <input type="hidden" name="delete_response_id" value="{{ response['Response ID'] }}">
                         <button type="submit">Delete</button>
                     </form>
