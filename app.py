@@ -7,13 +7,15 @@
 # ########################################
 # ########## SETUP
 
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, flash
 import database.db_connector as db
 
 PORT = 49124
 
 app = Flask(__name__)
 
+# secret key to fascilitate flash messages - I know nothing about encryption so used a string - Dawson - citation in routes section
+app.secret_key = "imagine_that_this_has_fancy_encryption"  
 # ########################################
 # ########## ROUTE HANDLERS
 
@@ -366,7 +368,7 @@ def KnownThreats():
         
         knownThreats = db.query(dbConnection, query1).fetchall()
 
-        # send the user to the update form if one is selected during an update attempt
+        # send the data to the update form if one is selected during an update attempt
         selected_knownThreat = None
         threat_id = request.args.get("threat_id")
         if threat_id:
@@ -404,12 +406,25 @@ def create_user():
         department = request.form["create_user_department"]
         role = request.form["create_user_role"]
 
-        # Create and execute our queries
-        query1 = "CALL sp_CreateUser(%s, %s, %s, %s, %s);"
-        cursor.execute(query1, (firstName, lastName, email, department, role))
+        try:
+            # Create and execute our queries
+            query1 = "CALL sp_CreateUser(%s, %s, %s, %s, %s);"
+            cursor.execute(query1, (firstName, lastName, email, department, role))
 
-        # Commit the changes to the database
-        dbConnection.commit()
+            # Commit the changes to the database
+            dbConnection.commit()
+
+        # Citation for the following code:
+        # Date: 6/8/25
+        # Copied from /OR/ Adapted from /OR/ Based on 
+        # Adapted from the exploration code with additional error catching using flash - tutorial linked below
+        # Source URL: https://www.tutorialspoint.com/flask/flask_message_flashing.htm
+        # I needed to know how to generate a popup message on an error (duplicate unique fields), I have heard of flash before
+        # so I researched from there and found this tutorial. The code is original + adapted from website
+        except Exception as e:
+            # duplicate email error
+            flash("Error: A user with that email already exists.")
+            return redirect("/Users")
 
         print(f"CREATE Users. Name: {firstName} {lastName}")
 
@@ -438,12 +453,25 @@ def create_device():
         status = request.form["create_device_status"]
         assignedTo = request.form["create_device_assignedTo"]
 
-        # Create and execute our queries
-        query1 = "CALL sp_CreateDevice(%s, %s, %s, %s, %s);"
-        cursor.execute(query1, (deviceName, ipAddress, deviceType, status, assignedTo))
+        
+        try:
+            # Create and execute our queries
+            query1 = "CALL sp_CreateDevice(%s, %s, %s, %s, %s);"
+            cursor.execute(query1, (deviceName, ipAddress, deviceType, status, assignedTo))
 
-        # Commit the changes to the database
-        dbConnection.commit()
+            # Commit the changes to the database
+            dbConnection.commit()
+
+        # Citation for the following code:
+        # Date: 6/8/25
+        # Copied from /OR/ Adapted from /OR/ Based on 
+        # Adapted from the exploration code with additional error catching using flash - tutorial linked below
+        # Source URL: https://www.tutorialspoint.com/flask/flask_message_flashing.htm
+        # I needed to know how to generate a popup message on an error (duplicate unique fields), I have heard of flash before
+        # so I researched from there and found this tutorial. The code is original + adapted from website
+        except Exception as e:
+            # duplicate device name and/or IP address error
+            flash("Error: A device with that name and/or IP address already exists.")
 
         print(f"CREATE Devices. Name: {deviceName}")
 
@@ -603,12 +631,24 @@ def create_service():
         port = request.form["create_service_port"]
         protocol = request.form["create_service_protocol"]
 
-        # Create and execute our queries
-        query1 = "CALL sp_CreateService(%s, %s, %s);"
-        cursor.execute(query1, (serviceName, port, protocol))
+        try:
+            # Create and execute our queries
+            query1 = "CALL sp_CreateService(%s, %s, %s);"
+            cursor.execute(query1, (serviceName, port, protocol))
 
-        # Commit the changes to the database
-        dbConnection.commit()
+            # Commit the changes to the database
+            dbConnection.commit()
+        # Citation for the following code:
+        # Date: 6/8/25
+        # Copied from /OR/ Adapted from /OR/ Based on 
+        # Adapted from the exploration code with additional error catching using flash - tutorial linked below
+        # Source URL: https://www.tutorialspoint.com/flask/flask_message_flashing.htm
+        # I needed to know how to generate a popup message on an error (duplicate unique fields), I have heard of flash before
+        # so I researched from there and found this tutorial. The code is original + adapted from website
+        except Exception as e:
+            # duplicate service name error
+            flash("Error: A service with that name already exists.")
+            return redirect("/Services")
 
         print(f"CREATE Services. Name: {serviceName}")
 
@@ -923,20 +963,33 @@ def update_users():
         userID = request.form["update_user_id"]
 
         # queries
-        query1 = "CALL sp_UpdateUser(%s, %s, %s, %s, %s, %s);"
-        cursor.execute(
-            query1,
-            (
-                userID,
-                request.form["update_user_firstName"],
-                request.form["update_user_lastName"],
-                request.form["update_user_email"],
-                request.form["update_user_department"],
-                request.form["update_user_role"]
+        try:
+            query1 = "CALL sp_UpdateUser(%s, %s, %s, %s, %s, %s);"
+            cursor.execute(
+                query1,
+                (
+                    userID,
+                    request.form["update_user_firstName"],
+                    request.form["update_user_lastName"],
+                    request.form["update_user_email"],
+                    request.form["update_user_department"],
+                    request.form["update_user_role"]
+                )
             )
-        )
 
-        dbConnection.commit()  # commit the changes
+            dbConnection.commit()  # commit the changes
+
+        # Citation for the following code:
+        # Date: 6/8/25
+        # Copied from /OR/ Adapted from /OR/ Based on 
+        # Adapted from the exploration code with additional error catching using flash - tutorial linked below
+        # Source URL: https://www.tutorialspoint.com/flask/flask_message_flashing.htm
+        # I needed to know how to generate a popup message on an error (duplicate unique fields), I have heard of flash before
+        # so I researched from there and found this tutorial. The code is original + adapted from website
+        except Exception as e:
+            # duplicate email error
+            flash("Error: A user with that email already exists.")
+            return redirect("/Users")
 
         #redirect to the Users page
         return redirect("/Users")
@@ -1064,21 +1117,34 @@ def update_devices():
         # get the form data
         deviceID = request.form["update_device_id"]
 
-        # queries
-        query1 = "CALL sp_UpdateDevice(%s, %s, %s, %s, %s, %s);"
-        cursor.execute(
-            query1,
-            (
-                deviceID,
-                request.form["update_device_name"],
-                request.form["update_device_ipAddress"],
-                request.form["update_device_type"],
-                request.form["update_device_status"],
-                request.form["update_device_assignedTo"]
+        try:
+            # queries
+            query1 = "CALL sp_UpdateDevice(%s, %s, %s, %s, %s, %s);"
+            cursor.execute(
+                query1,
+                (
+                    deviceID,
+                    request.form["update_device_name"],
+                    request.form["update_device_ipAddress"],
+                    request.form["update_device_type"],
+                    request.form["update_device_status"],
+                    request.form["update_device_assignedTo"]
+                )
             )
-        )
 
-        dbConnection.commit()  # commit the changes
+            dbConnection.commit()  # commit the changes
+            
+        # Citation for the following code:
+        # Date: 6/8/25
+        # Copied from /OR/ Adapted from /OR/ Based on 
+        # Adapted from the exploration code with additional error catching using flash - tutorial linked below
+        # Source URL: https://www.tutorialspoint.com/flask/flask_message_flashing.htm
+        # I needed to know how to generate a popup message on an error (duplicate unique fields), I have heard of flash before
+        # so I researched from there and found this tutorial. The code is original + adapted from website
+        except Exception as e:
+            # duplicate device name and/or IP address error
+            flash("Error: A device with that name and/or IP address already exists.")
+            return redirect("/Devices")
 
         #redirect to the Devices page
         return redirect("/Devices")
@@ -1135,18 +1201,30 @@ def update_services():
         serviceID = request.form["update_service_id"]
 
         # queries
-        query1 = "CALL sp_UpdateService(%s, %s, %s, %s);"
-        cursor.execute(
-            query1,
-            (
-                serviceID,
-                request.form["update_service_name"],
-                request.form["update_service_port"],
-                request.form["update_service_protocol"]
+        try:
+            query1 = "CALL sp_UpdateService(%s, %s, %s, %s);"
+            cursor.execute(
+                query1,
+                (
+                    serviceID,
+                    request.form["update_service_name"],
+                    request.form["update_service_port"],
+                    request.form["update_service_protocol"]
+                )
             )
-        )
 
-        dbConnection.commit()  # commit the changes
+            dbConnection.commit()  # commit the changes
+        # Citation for the following code:
+        # Date: 6/8/25
+        # Copied from /OR/ Adapted from /OR/ Based on 
+        # Adapted from the exploration code with additional error catching using flash - tutorial linked below
+        # Source URL: https://www.tutorialspoint.com/flask/flask_message_flashing.htm
+        # I needed to know how to generate a popup message on an error (duplicate unique fields), I have heard of flash before
+        # so I researched from there and found this tutorial. The code is original + adapted from website
+        except Exception as e:
+            # duplicate service name error
+            flash("Error: A service with that name already exists.")
+            return redirect("/Services")
 
         #redirect to the Services page
         return redirect("/Services")
