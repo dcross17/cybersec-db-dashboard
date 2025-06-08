@@ -30,41 +30,62 @@
     <input type="submit">
 </form>
 
+{# Citation for the following code: #}
+{# Date: 6/8/25 #}
+{# Copied from /OR/ Adapted from /OR/ Based on #}
+{# Starter Code + Copilot assisted in some of the embedded preopulation logic, details below. #}
+{# Source URL: www.m365.cloud.microsoft #}
+{# If AI tools were used: #}
+{# The original Update forms were based on the Flask starter code provided in the explorations. #}
+{# To enable pre-population functionality, I added code to the get routes in the app.py file but was struggling#}
+{# to have the changes populate in the form after severl attempts. I gave copilot the following initial prompt: #}
+{# "How can one populate the update fields upon selection of an object from the dropdown with the following route: *inserted app.py get route*.#}\
+{# "I beleive I am close but cannot locate my error" After some refinement prompts and slight tweaking I arrived at the solution you see below.#}
 {# UPDATE form #}
 <h2>Update a knownThreat</h2>
-<form class="cuForm" id="update_knownThreat_form" method="POST" action="/KnownThreats/update">
+{# Prepopulate the fields to allow for selective changes #}
+<form method="GET" action="/KnownThreats">
     <label for="update_knownThreat_id">Threat to Update: </label>
-    <select name="update_knownThreat_id" id="update_knownThreat_id" required>
-        <option value="" disabled selected>Select a knownThreat</option>
+    <select name="threat_id" id="update_knownThreat_id" required onchange="this.form.submit()">
+        <option value="" disabled {% if not selected_knownThreat %}selected{% endif %}>Select a knownThreat</option>
         {% for knownThreat in knownThreats %}
-        <option value="{{knownThreat['Threat ID']}}" required>
+        <option value="{{knownThreat['Threat ID']}}" {% if selected_knownThreat and knownThreat['Threat ID'] == selected_knownThreat['Threat ID'] %}selected{% endif %}>
             {{knownThreat['Threat ID']}} {{knownThreat['Name']}}
         </option>
         {% endfor %}
     </select>
+    <noscript><input type="submit" value="Load"></noscript>
+</form>
+
+<form class="cuForm" id="update_knownThreat_form" method="POST" action="/KnownThreats/update">
+    <input type="hidden" name="update_knownThreat_id" value="{{ selected_knownThreat['Threat ID'] if selected_knownThreat else '' }}">
 
     <label for="update_knownThreat_name">Threat Name: </label>
-    <input type="text" name="update_knownThreat_name" id="update_knownThreat_name">
+    <input type="text" name="update_knownThreat_name" id="update_knownThreat_name"
+           value="{{ selected_knownThreat['Name'] if selected_knownThreat else '' }}">
 
     <label for="update_knownThreat_type">Type: </label>
     <select name="update_knownThreat_type" id="update_knownThreat_type" required>
         <option value="" disabled selected>Select a type</option>
-        <option value="Malware">Malware</option>
-        <option value="Exploit">Exploit</option>
-        <option value="Tool">Tool</option>
-        <option value="Other">Other</option>
+        <option value="Malware" {% if selected_knownThreat and selected_knownThreat['Type'] == 'Malware' %}selected{% endif %}>Malware</option>
+        <option value="Exploit" {% if selected_knownThreat and selected_knownThreat['Type'] == 'Exploit' %}selected{% endif %}>Exploit</option>
+        <option value="Tool" {% if selected_knownThreat and selected_knownThreat['Type'] == 'Tool' %}selected{% endif %}>Tool</option>
+        <option value="Other" {% if selected_knownThreat and selected_knownThreat['Type'] == 'Other' %}selected{% endif %}>Other</option>
     </select>
 
     <label for="update_knownThreat_description">Description: </label>
-    <input type="textarea" name="update_knownThreat_description" id="update_knownThreat_description">
+    <input type="textarea" name="update_knownThreat_description" id="update_knownThreat_description"
+           value="{{ selected_knownThreat['Description'] if selected_knownThreat else '' }}">
 
     <label for="update_knownThreat_dateFirstSeen">Date First Seen: </label>
-    <input type="date" name="update_knownThreat_dateFirstSeen" id="update_knownThreat_dateFirstSeen">
+    <input type="date" name="update_knownThreat_dateFirstSeen" id="update_knownThreat_dateFirstSeen"
+           value="{{ selected_knownThreat['Date First Seen'] if selected_knownThreat else '' }}">
     
     <label for="update_knownThreat_dateLastSeen">Date Last Seen: </label>
-    <input type="date" name="update_knownThreat_dateLastSeen" id="update_knownThreat_dateLastSeen">
+    <input type="date" name="update_knownThreat_dateLastSeen" id="update_knownThreat_dateLastSeen"
+           value="{{ selected_knownThreat['Date Last Seen'] if selected_knownThreat else '' }}">
 
-    <input type="submit">
+    <input type="submit" {% if not selected_knownThreat %}disabled{% endif %}>
 </form>
 
 {# Citation for the following code: #}

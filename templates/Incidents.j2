@@ -51,54 +51,72 @@
     <input type="submit">
 </form>
 
+{# Citation for the following code: #}
+{# Date: 6/8/25 #}
+{# Copied from /OR/ Adapted from /OR/ Based on #}
+{# Starter Code + Copilot assisted in some of the embedded preopulation logic, details below. #}
+{# Source URL: www.m365.cloud.microsoft #}
+{# If AI tools were used: #}
+{# The original Update forms were based on the Flask starter code provided in the explorations. #}
+{# To enable pre-population functionality, I added code to the get routes in the app.py file but was struggling#}
+{# to have the changes populate in the form after severl attempts. I gave copilot the following initial prompt: #}
+{# "How can one populate the update fields upon selection of an object from the dropdown with the following route: *inserted app.py get route*.#}\
+{# "I beleive I am close but cannot locate my error" After some refinement prompts and slight tweaking I arrived at the solution you see below.#}
+
 {# UPDATE form #}
 <h2>Update an Incident</h2>
-<form class="cuForm" id="update_incident_form" method="POST" action="/Incidents/update">
-
-    <select name="update_incident_id" id="update_incident_id" required>  
-    <option value="" disabled selected>Select an Incident</option>
-    {% for incident in incidents %}
-    <option value="{{incident['Incident ID']}}">
-        {{incident['Incident ID']}}
-    </option>
-    {% endfor %}
+{# Prepopulate the fields to allow for selective changes #}
+<form method="GET" action="/Incidents">
+    <label for="update_incident_id">Incident to Update: </label>
+    <select name="incident_id" id="update_incident_id" required onchange="this.form.submit()">
+        <option value="" disabled {% if not selected_incident %}selected{% endif %}>Select an Incident</option>
+        {% for incident in incidents %}
+        <option value="{{incident['Incident ID']}}" {% if selected_incident and incident['Incident ID'] == selected_incident['Incident ID'] %}selected{% endif %}>
+            {{incident['Incident ID']}}
+        </option>
+        {% endfor %}
     </select>
+    <noscript><input type="submit" value="Load"></noscript>
+</form>
+
+<form class="cuForm" id="update_incident_form" method="POST" action="/Incidents/update">
+    <input type="hidden" name="update_incident_id" value="{{ selected_incident['Incident ID'] if selected_incident else '' }}">
 
     <label for="update_incident_timeOccurred">Time and Date: </label>  
-    <input type="datetime-local" name="update_incident_timeOccurred" id="update_incident_timeOccurred" required>
+    <input type="datetime-local" name="update_incident_timeOccurred" id="update_incident_timeOccurred"
+           value="{{ selected_incident['Time Occurred'] if selected_incident else '' }}" required>
 
     <label for="update_incident_description">Description: </label>
-    <input type="text" name="update_incident_description" id="update_incident_description" required>
+    <input type="text" name="update_incident_description" id="update_incident_description"
+           value="{{ selected_incident['Description'] if selected_incident else '' }}" required>
 
     <label for="update_incident_priority">Priority: </label>
     <select name="update_incident_priority" id="update_incident_priority" required>
         <option value="" disabled selected>Select a Priority</option>
-        <option value="1">1 - High</option>
-        <option value="2">2 - Medium</option>
-        <option value="3">3 - Low</option>
+        <option value="1" {% if selected_incident and selected_incident['Priority'] == 1 %}selected{% endif %}>1 - High</option>
+        <option value="2" {% if selected_incident and selected_incident['Priority'] == 2 %}selected{% endif %}>2 - Medium</option>
+        <option value="3" {% if selected_incident and selected_incident['Priority'] == 3 %}selected{% endif %}>3 - Low</option>
     </select>
-
 
     <label for="update_incident_status">Status: </label>
     <select name="update_incident_status" id="update_incident_status" required>
         <option value="" disabled selected>Select a Status</option>
-        <option value="Not Started">Not Started</option>
-        <option value="In Progress">In Progress</option>
-        <option value="Completed">Completed</option>
+        <option value="Not Started" {% if selected_incident and selected_incident['Status'] == 'Not Started' %}selected{% endif %}>Not Started</option>
+        <option value="In Progress" {% if selected_incident and selected_incident['Status'] == 'In Progress' %}selected{% endif %}>In Progress</option>
+        <option value="Completed" {% if selected_incident and selected_incident['Status'] == 'Completed' %}selected{% endif %}>Completed</option>
     </select>
 
     <label for="update_incident_threatID">Threat: </label>  
     <select name="update_incident_threatID" id="update_incident_threatID" required>
         <option value="" disabled selected>Select a Threat</option>
         {% for threat in threats %}
-        <option value="{{threat['threatID']}}">
+        <option value="{{threat['threatID']}}" {% if selected_incident and threat['threatID'] == selected_incident['Threat ID'] %}selected{% endif %}>
             {{threat['threatID']}} - {{threat['name']}}
         </option>
         {% endfor %}
     </select>
 
-
-    <input type="submit">
+    <input type="submit" {% if not selected_incident %}disabled{% endif %}>
 </form>
 
 {# Citation for the following code: #}

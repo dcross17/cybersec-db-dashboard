@@ -32,26 +32,42 @@
     <input type="submit">
 </form>
 
+{# Citation for the following code: #}
+{# Date: 6/8/25 #}
+{# Copied from /OR/ Adapted from /OR/ Based on #}
+{# Starter Code + Copilot assisted in some of the embedded preopulation logic, details below. #}
+{# Source URL: www.m365.cloud.microsoft #}
+{# If AI tools were used: #}
+{# The original Update forms were based on the Flask starter code provided in the explorations. #}
+{# To enable pre-population functionality, I added code to the get routes in the app.py file but was struggling#}
+{# to have the changes populate in the form after severl attempts. I gave copilot the following initial prompt: #}
+{# "How can one populate the update fields upon selection of an object from the dropdown with the following route: *inserted app.py get route*.#}\
+{# "I beleive I am close but cannot locate my error" After some refinement prompts and slight tweaking I arrived at the solution you see below.#}
 {# UPDATE form #}
 <h2>Update DeviceService</h2>
-<form class="cuForm" id="update_deviceService_form" method="POST" action="/DeviceServices/update">
-    <label for="update_deviceService_id">deviceService to Update: </label>
-    <select name="update_deviceService_id" id="update_deviceService_id" required>
-        <option value="" disabled selected>Select a deviceService</option>
+{# Prepopulate the fields to allow for selective changes #}
+<form method="GET" action="/DeviceServices">
+    <label for="update_deviceService_id">DeviceService to Update: </label>
+    <select name="deviceService_id" id="update_deviceService_id" required onchange="this.form.submit()">
+        <option value="" disabled {% if not selected_deviceService %}selected{% endif %}>Select a DeviceService</option>
         {% for deviceService in deviceServices %}
-        <option value="{{deviceService['Device Service ID']}}" required>
+        <option value="{{deviceService['Device Service ID']}}" {% if selected_deviceService and deviceService['Device Service ID'] == selected_deviceService['Device Service ID'] %}selected{% endif %}>
             {{deviceService['Device Service ID']}}
         </option>
         {% endfor %}
     </select>
+    <noscript><input type="submit" value="Load"></noscript>
+</form>
+
+<form class="cuForm" id="update_deviceService_form" method="POST" action="/DeviceServices/update">
+    <input type="hidden" name="update_deviceService_id" value="{{ selected_deviceService['Device Service ID'] if selected_deviceService else '' }}">
 
     <label for="update_deviceService_device">Device: </label>
     <select name="update_deviceService_device" id="update_deviceService_device" required>
         <option value="" disabled selected>Select a Device</option>
         {% for device in devices %}
-        <option value="{{device['deviceID']}}" required>
-            {{device['deviceID']}} -
-            {{device['deviceName']}}
+        <option value="{{device['deviceID']}}" {% if selected_deviceService and device['deviceID'] == selected_deviceService['Device ID'] %}selected{% endif %}>
+            {{device['deviceID']}} - {{device['deviceName']}}
         </option>
         {% endfor %}
     </select>
@@ -60,14 +76,13 @@
     <select name="update_deviceService_service" id="update_deviceService_service" required>
         <option value="" disabled selected>Select a Service</option>
         {% for service in services %}
-        <option value="{{service['serviceID']}}" required>
-            {{service['serviceID']}} -
-            {{service['serviceName']}}
+        <option value="{{service['serviceID']}}" {% if selected_deviceService and service['serviceID'] == selected_deviceService['Service ID'] %}selected{% endif %}>
+            {{service['serviceID']}} - {{service['serviceName']}}
         </option>
         {% endfor %}
     </select>
 
-    <input type="submit">
+    <input type="submit" {% if not selected_deviceService %}disabled{% endif %}>
 </form>
 
 {# Citation for the following code: #}

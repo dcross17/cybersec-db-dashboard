@@ -35,40 +35,59 @@
     <input type="submit">
 </form>
 
+
+{# Citation for the following code: #}
+{# Date: 6/8/25 #}
+{# Copied from /OR/ Adapted from /OR/ Based on #}
+{# Starter Code + Copilot assisted in some of the embedded preopulation logic, details below. #}
+{# Source URL: www.m365.cloud.microsoft #}
+{# If AI tools were used: #}
+{# The original Update forms were based on the Flask starter code provided in the explorations. #}
+{# To enable pre-population functionality, I added code to the get routes in the app.py file but was struggling#}
+{# to have the changes populate in the form after severl attempts. I gave copilot the following initial prompt: #}
+{# "How can one populate the update fields upon selection of an object from the dropdown with the following route: *inserted app.py get route*.#}\
+{# "I beleive I am close but cannot locate my error" After some refinement prompts and slight tweaking I arrived at the solution you see below.#}
 {# UPDATE form #}
 <h2>Update a User</h2>
-<form class="cuForm" id="update_user_form" method="POST" action="/Users/update">
+{# Prepopulate the fields to allow for selective changes #}
+<form method="GET" action="/Users">
     <label for="update_user_id">User to Update: </label>
-    <select name="update_user_id" id="update_user_id" required>
-        <option value="" disabled selected>Select a User</option>
+    <select name="user_id" id="update_user_id" required onchange="this.form.submit()">
+        <option value="" disabled {% if not selected_user %}selected{% endif %}>Select a User</option>
         {% for user in users %}
-        <option value="{{user['User ID']}}" required>
-            {{user['User ID']}}
-            {{user['First Name']}}
-            {{user['Last Name']}}
+        <option value="{{user['User ID']}}" {% if selected_user and user['User ID'] == selected_user['User ID'] %}selected{% endif %}>
+            {{user['User ID']}} {{user['First Name']}} {{user['Last Name']}}
         </option>
         {% endfor %}
     </select>
+    <noscript><input type="submit" value="Load"></noscript>
+</form>
 
+<form class="cuForm" id="update_user_form" method="POST" action="/Users/update">
+    <input type="hidden" name="update_user_id" value="{{ selected_user['User ID'] if selected_user else '' }}">
     <label for="update_user_firstName">First Name:</label>
-    <input type="text" name="update_user_firstName" id="update_user_firstName" required>
+    <input type="text" name="update_user_firstName" id="update_user_firstName"
+           value="{{ selected_user['First Name'] if selected_user else '' }}" required>
 
     <label for="update_user_lastName">Last Name:</label>
-    <input type="text" name="update_user_lastName" id="update_user_lastName" required>
+    <input type="text" name="update_user_lastName" id="update_user_lastName"
+           value="{{ selected_user['Last Name'] if selected_user else '' }}" required>
 
     <label for="update_user_email">Email: </label>
-    <input type="email" name="update_user_email" id="update_user_email">
+    <input type="email" name="update_user_email" id="update_user_email"
+           value="{{ selected_user['Email'] if selected_user else '' }}">
 
     <label for="update_user_department">Department: </label>
-    <input type="text" name="update_user_department" id="update_user_department">
+    <input type="text" name="update_user_department" id="update_user_department"
+           value="{{ selected_user['Department'] if selected_user else '' }}">
 
     <label for="update_user_role">Role: </label>
     <select name="update_user_role" id="update_user_role" required>
-        <option value="admin">admin</option>
-        <option value="user">user</option>
+        <option value="admin" {% if selected_user and selected_user['Role'] == 'admin' %}selected{% endif %}>admin</option>
+        <option value="user" {% if selected_user and selected_user['Role'] == 'user' %}selected{% endif %}>user</option>
     </select>
 
-    <input type="submit">
+    <input type="submit" {% if not selected_user %}disabled{% endif %}>
 </form>
 
 {# Citation for the following code: #}

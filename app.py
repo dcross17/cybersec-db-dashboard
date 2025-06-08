@@ -10,7 +10,7 @@
 from flask import Flask, render_template, request, redirect
 import database.db_connector as db
 
-PORT = 49123
+PORT = 49124
 
 app = Flask(__name__)
 
@@ -71,14 +71,19 @@ def Users():
         dbConnection = db.connectDB()  # Open our database connection
 
         # Create and execute our queries
-        query1 = "SELECT Users.userID as 'User ID', Users.firstName as 'First Name', Users.lastName as 'Last Name', Users.email as Email, Users.department as Department, Users.role as 'Role' " \
-        "FROM Users;"
+        query1 = "SELECT Users.userID as 'User ID', Users.firstName as 'First Name', Users.lastName as 'Last Name', Users.email as Email, Users.department as Department, Users.role as 'Role' FROM Users;"
         users = db.query(dbConnection, query1).fetchall()
         
+        # send the user to the update form if one is selected during an update attempt
+        selected_user = None
+        user_id = request.args.get("user_id")
+        if user_id:
+            query2 = "SELECT Users.userID as 'User ID', Users.firstName as 'First Name', Users.lastName as 'Last Name', Users.email as Email, Users.department as Department, Users.role as 'Role' FROM Users WHERE Users.userID = %s;"
+            selected_user = db.query(dbConnection, query2, (user_id,)).fetchone()
 
         # Render the users j2 file, and also send the renderer
         return render_template(
-            "Users.j2", users=users
+            "Users.j2", users=users, selected_user=selected_user
         )
 
     except Exception as e:
@@ -97,20 +102,26 @@ def Incidents():
         dbConnection = db.connectDB()  # Open our database connection
 
         # Create and execute our queries
-        query1 = "SELECT Incidents.incidentID as 'Incident ID', Incidents.timeOccurred as 'Time Occurred', Incidents.description as 'Description', Incidents.priority as Priority, Incidents.status as 'Status', Incidents.threatID as 'Threat ID' " \
-        "FROM Incidents;"
-
+        query1 = "SELECT Incidents.incidentID as 'Incident ID', Incidents.timeOccurred as 'Time Occurred', Incidents.description as 'Description', Incidents.priority as Priority, Incidents.status as 'Status', Incidents.threatID as 'Threat ID' FROM Incidents;"
         incidents = db.query(dbConnection, query1).fetchall()
         
         # Query to get all incidents so we can display them in the dropdown
-        query2 = "SELECT KnownThreats.threatID, KnownThreats.name " \
-        "FROM KnownThreats;"
+        query2 = "SELECT KnownThreats.threatID, KnownThreats.name FROM KnownThreats;"
         threats = db.query(dbConnection, query2).fetchall()
+
+        # send the data to the update form if one is selected during an update attempt
+        selected_incident = None
+        incident_id = request.args.get("incident_id")
+        if incident_id:
+            query3 = "SELECT Incidents.incidentID as 'Incident ID', Incidents.timeOccurred as 'Time Occurred', Incidents.description as 'Description', Incidents.priority as Priority, Incidents.status as 'Status', Incidents.threatID as 'Threat ID' FROM Incidents WHERE Incidents.incidentID = %s;"
+            selected_incident = db.query(dbConnection, query3, (incident_id,)).fetchone()
 
         # Render the incidents j2 file, and also send the renderer
         return render_template(
-            "Incidents.j2", incidents=incidents,
-            threats=threats
+            "Incidents.j2", 
+            incidents=incidents,
+            threats=threats,
+            selected_incident=selected_incident
         )
 
     except Exception as e:
@@ -122,7 +133,6 @@ def Incidents():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
-# get IncidentDevices
 # get IncidentDevices
 @app.route("/IncidentDevices", methods=["GET"])
 def IncidentDevices():
@@ -153,13 +163,20 @@ def IncidentDevices():
         "JOIN Devices ON IncidentDevices.deviceID = Devices.deviceID;"
         incDevInfo = db.query(dbConnection, query4).fetchall()
 
+        # send the data to the update form if one is selected during an update attempt
+        selected_incidentDevice = None
+        incidentDevices_id = request.args.get("incidentDevices_id")
+        if incidentDevices_id:
+            query5 = "SELECT IncidentDevices.incidentDevicesID as 'Incident Devices ID', IncidentDevices.incidentID as 'Incident ID', IncidentDevices.deviceID as 'Device ID' FROM IncidentDevices WHERE IncidentDevices.incidentDevicesID = %s;"
+            selected_incidentDevice = db.query(dbConnection, query5, (incidentDevices_id,)).fetchone()
 
         # Render the incidents j2 file, and also send the renderer
         return render_template(
             "IncidentDevices.j2", incidentDevices=incidentDevices,
             incidents=incidents,
             devices=devices,
-            incDevInfo=incDevInfo
+            incDevInfo=incDevInfo,
+            selected_incidentDevice=selected_incidentDevice
         )
 
     except Exception as e:
@@ -192,12 +209,20 @@ def Responses():
         query3 = "SELECT Incidents.incidentID, Incidents.description FROM Incidents;"
         incidents = db.query(dbConnection, query3).fetchall()
 
-        # Render the incidents j2 file, and also send the renderer
+        # send the data to the update form if one is selected during an update attempt
+        selected_response = None
+        response_id = request.args.get("response_id")
+        if response_id:
+            query4 = "SELECT Responses.responseID as 'Response ID', Responses.incidentID as 'Incident ID', Responses.userID as 'User ID', Responses.timeStarted as 'Time Started', Responses.timeEnded as 'Time Ended', Responses.actionPerformed as 'Action Performed', Responses.status as 'Status' FROM Responses WHERE Responses.responseID = %s;"
+            selected_response = db.query(dbConnection, query4, (response_id,)).fetchone()
+
+        # Render the responses j2 file, and also send the renderer
         return render_template(
             "Responses.j2", 
             responses=responses,
             users=users,
-            incidents=incidents
+            incidents=incidents,
+            selected_response=selected_response
         )
 
     except Exception as e:
@@ -221,18 +246,24 @@ def Devices():
         
         devices = db.query(dbConnection, query1).fetchall()
 
-
         # Query to get all users so we can display them in the dropdown
         query2 = "SELECT Users.userID, Users.firstName, Users.lastName " \
         "FROM Users;"
         users = db.query(dbConnection, query2).fetchall()
 
+        # send the data to the update form if one is selected during an update attempt
+        selected_device = None
+        device_id = request.args.get("device_id")
+        if device_id:
+            query3 = "SELECT Devices.deviceID as 'Device ID', Devices.deviceName as 'Device Name', Devices.IPAddress as 'IP Address', Devices.deviceType as 'Device Type', Devices.status as 'Status', Devices.assignedTo as 'Assigned To' FROM Devices WHERE Devices.deviceID = %s;"
+            selected_device = db.query(dbConnection, query3, (device_id,)).fetchone()
 
-        # Render the users j2 file, and also send the renderer
+        # Render the devices j2 file, and also send the renderer
         return render_template(
             "Devices.j2", 
             devices=devices,
-            users=users
+            users=users,
+            selected_device=selected_device
         )
 
     except Exception as e:
@@ -244,7 +275,6 @@ def Devices():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
-# get deviceServices
 @app.route("/DeviceServices", methods=["GET"])
 def DeviceServices():
     try:
@@ -252,28 +282,33 @@ def DeviceServices():
 
         # Create and execute our queries
         query1 = "SELECT DeviceServices.deviceServiceID as 'Device Service ID', DeviceServices.deviceID as 'Device ID', DeviceServices.serviceID as 'Service ID' " \
-        "FROM DeviceServices; " \
-        
+        "FROM DeviceServices; "
         deviceServices = db.query(dbConnection, query1).fetchall()
 
         query2 = "SELECT deviceID, deviceName " \
         "FROM Devices " \
-        "ORDER BY deviceID ASC; " \
-
+        "ORDER BY deviceID ASC; "
         devices = db.query(dbConnection, query2).fetchall()
 
         query3 = "SELECT serviceID, serviceName " \
         "FROM Services " \
-        "ORDER BY serviceID ASC;" \
-
+        "ORDER BY serviceID ASC;"
         services = db.query(dbConnection, query3).fetchall()
 
-        # Render the users j2 file, and also send the renderer
+        # send the data to the update form if one is selected during an update attempt
+        selected_deviceService = None
+        deviceService_id = request.args.get("deviceService_id")
+        if deviceService_id:
+            query4 = "SELECT DeviceServices.deviceServiceID as 'Device Service ID', DeviceServices.deviceID as 'Device ID', DeviceServices.serviceID as 'Service ID' FROM DeviceServices WHERE DeviceServices.deviceServiceID = %s;"
+            selected_deviceService = db.query(dbConnection, query4, (deviceService_id,)).fetchone()
+
+        # Render the deviceServices j2 file, and also send the renderer
         return render_template(
             "DeviceServices.j2", 
             deviceServices=deviceServices,
             devices=devices,
-            services=services
+            services=services,
+            selected_deviceService=selected_deviceService
         )
 
     except Exception as e:
@@ -293,14 +328,21 @@ def Services():
 
         # Create and execute our queries
         query1 = "SELECT Services.serviceID as 'Service ID', Services.serviceName as 'Service Name', Services.port as Port, Services.protocol as Protocol " \
-        "FROM Services " \
-        
+        "FROM Services "
         services = db.query(dbConnection, query1).fetchall()
 
-        # Render the users j2 file, and also send the renderer
+        # send the data to the update form if one is selected during an update attempt
+        selected_service = None
+        service_id = request.args.get("service_id")
+        if service_id:
+            query2 = "SELECT Services.serviceID as 'Service ID', Services.serviceName as 'Service Name', Services.port as Port, Services.protocol as Protocol FROM Services WHERE Services.serviceID = %s;"
+            selected_service = db.query(dbConnection, query2, (service_id,)).fetchone()
+
+        # Render the services j2 file, and also send the renderer
         return render_template(
             "Services.j2", 
             services=services,
+            selected_service=selected_service
         )
 
     except Exception as e:
@@ -324,10 +366,18 @@ def KnownThreats():
         
         knownThreats = db.query(dbConnection, query1).fetchall()
 
-        # Render the users j2 file, and also send the renderer
+        # send the user to the update form if one is selected during an update attempt
+        selected_knownThreat = None
+        threat_id = request.args.get("threat_id")
+        if threat_id:
+            query2 = "SELECT KnownThreats.threatID as 'Threat ID', KnownThreats.name as 'Name', KnownThreats.type as 'Type', KnownThreats.description as 'Description', KnownThreats.dateFirstSeen as 'Date First Seen', KnownThreats.dateLastSeen as 'Date Last Seen' FROM KnownThreats WHERE KnownThreats.threatID = %s;"
+            selected_knownThreat = db.query(dbConnection, query2, (threat_id,)).fetchone()
+
+        # Render the knownThreats j2 file, and also send the renderer
         return render_template(
             "KnownThreats.j2", 
             knownThreats=knownThreats,
+            selected_knownThreat=selected_knownThreat
         )
 
     except Exception as e:

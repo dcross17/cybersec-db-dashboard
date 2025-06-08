@@ -53,37 +53,77 @@
     <input type="submit">
 </form>
 
+{# Citation for the following code: #}
+{# Date: 6/8/25 #}
+{# Copied from /OR/ Adapted from /OR/ Based on #}
+{# Starter Code + Copilot assisted in some of the embedded preopulation logic, details below. #}
+{# Source URL: www.m365.cloud.microsoft #}
+{# If AI tools were used: #}
+{# The original Update forms were based on the Flask starter code provided in the explorations. #}
+{# To enable pre-population functionality, I added code to the get routes in the app.py file but was struggling#}
+{# to have the changes populate in the form after severl attempts. I gave copilot the following initial prompt: #}
+{# "How can one populate the update fields upon selection of an object from the dropdown with the following route: *inserted app.py get route*.#}\
+{# "I beleive I am close but cannot locate my error" After some refinement prompts and slight tweaking I arrived at the solution you see below.#}
 {# UPDATE form #}
 <h2>Update a Response</h2>
-<form class="cuForm" id="update_incident_form" method="POST" action="/Responses/update">
-    <label for="update_responseID">Response to Update: </label>
-    <select name="update_responseID" id="update_responseID" required>
-        <option value="" disabled selected>Select a Response</option>
+{# Prepopulate the fields to allow for selective changes #}
+<form method="GET" action="/Responses">
+    <label for="update_response_id">Response to Update: </label>
+    <select name="response_id" id="update_response_id" required onchange="this.form.submit()">
+        <option value="" disabled {% if not selected_response %}selected{% endif %}>Select a Response</option>
         {% for response in responses %}
-        <option value="{{response['Response ID']}}">
+        <option value="{{response['Response ID']}}" {% if selected_response and response['Response ID'] == selected_response['Response ID'] %}selected{% endif %}>
             {{response['Response ID']}}
         </option>
         {% endfor %}
     </select>
+    <noscript><input type="submit" value="Load"></noscript>
+</form>
 
+<form class="cuForm" id="update_response_form" method="POST" action="/Responses/update">
+    <input type="hidden" name="update_responseID" value="{{ selected_response['Response ID'] if selected_response else '' }}">
+
+    <label for="update_response_userID">User: </label>
+    <select name="update_response_userID" id="update_response_userID" required>
+        <option value="" disabled selected>Select a User</option>
+        {% for user in users %}
+        <option value="{{user['userID']}}" {% if selected_response and user['userID'] == selected_response['User ID'] %}selected{% endif %}>
+            {{user['userID']}} - {{user['firstName']}} {{user['lastName']}}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label for="update_response_incidentID">Incident: </label>
+    <select name="update_response_incidentID" id="update_response_incidentID" required>
+        <option value="" disabled selected>Select an Incident</option>
+        {% for incident in incidents %}
+        <option value="{{incident['incidentID']}}" {% if selected_response and incident['incidentID'] == selected_response['Incident ID'] %}selected{% endif %}>
+            {{incident['incidentID']}} - {{incident['description']}}
+        </option>
+        {% endfor %}
+    </select>
+    
     <label for="update_timeStarted">Time Started: </label>
-    <input type="datetime-local" name="update_timeStarted" id="update_timeStarted" required>
+    <input type="datetime-local" name="update_timeStarted" id="update_timeStarted"
+           value="{{ selected_response['Time Started'] if selected_response else '' }}" required>
 
     <label for="update_timeEnded">Time Ended: </label>
-    <input type="datetime-local" name="update_timeEnded" id="update_timeEnded" required>
+    <input type="datetime-local" name="update_timeEnded" id="update_timeEnded"
+           value="{{ selected_response['Time Ended'] if selected_response else '' }}">
 
     <label for="update_actionPerformed">Action Performed: </label>
-    <input type="text" name="update_actionPerformed" id="update_actionPerformed" required>
+    <input type="text" name="update_actionPerformed" id="update_actionPerformed"
+           value="{{ selected_response['Action Performed'] if selected_response else '' }}" required>
 
     <label for="update_status">Status: </label>
     <select name="update_status" id="update_status" required>
         <option value="" disabled selected>Select a Status</option>
-        <option value="Not Started">Not Started</option>
-        <option value="In Progress">In Progress</option>
-        <option value="Completed">Completed</option>
+        <option value="Not Started" {% if selected_response and selected_response['Status'] == 'Not Started' %}selected{% endif %}>Not Started</option>
+        <option value="In Progress" {% if selected_response and selected_response['Status'] == 'In Progress' %}selected{% endif %}>In Progress</option>
+        <option value="Completed" {% if selected_response and selected_response['Status'] == 'Completed' %}selected{% endif %}>Completed</option>
     </select>
 
-    <input type="submit">
+    <input type="submit" {% if not selected_response %}disabled{% endif %}>
 </form>
 
 {# Citation for the following code: #}

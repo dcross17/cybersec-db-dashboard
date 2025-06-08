@@ -38,45 +38,59 @@
     <input type="submit">
 </form>
 
+{# Citation for the following code: #}
+{# Date: 6/8/25 #}
+{# Copied from /OR/ Adapted from /OR/ Based on #}
+{# Starter Code + Copilot assisted in some of the embedded preopulation logic, details below. #}
+{# Source URL: www.m365.cloud.microsoft #}
+{# If AI tools were used: #}
+{# The original Update forms were based on the Flask starter code provided in the explorations. #}
+{# To enable pre-population functionality, I added code to the get routes in the app.py file but was struggling#}
+{# to have the changes populate in the form after severl attempts. I gave copilot the following initial prompt: #}
+{# "How can one populate the update fields upon selection of an object from the dropdown with the following route: *inserted app.py get route*.#}\
+{# "I beleive I am close but cannot locate my error" After some refinement prompts and slight tweaking I arrived at the solution you see below.#}
 {# UPDATE form #}
 <h2>Update an IncidentDevice Intersection</h2>
-<form class="cuForm" id="update_incident_form" method="POST" action="/IncidentDevices/update">
-
-    <label for="update_incidentDevicesID">Incident Devices ID: </label>
-    <select name="update_incidentDevices_id" id="update_incidentDevices_id" required>
-        <option value="" disabled selected>Select an IncidentDevice</option>
-        {% for idInfo in incDevInfo%}
-        <option value="{{idInfo['incidentDevicesID']}}" required>
-            {{idInfo['incidentDevicesID']}} -
-            {{idInfo['Incident Description']}} - {{idInfo['Device Name']}}
+{# Prepopulate the fields to allow for selective changes #}
+<form method="GET" action="/IncidentDevices">
+    <label for="update_incidentDevices_id">IncidentDevice to Update: </label>
+    <select name="incidentDevices_id" id="update_incidentDevices_id" required onchange="this.form.submit()">
+        <option value="" disabled {% if not selected_incidentDevice %}selected{% endif %}>Select an IncidentDevice</option>
+        {% for idInfo in incDevInfo %}
+        <option value="{{idInfo['incidentDevicesID']}}" {% if selected_incidentDevice and idInfo['incidentDevicesID'] == selected_incidentDevice['Incident Devices ID'] %}selected{% endif %}>
+            {{idInfo['incidentDevicesID']}} - {{idInfo['Incident Description']}} - {{idInfo['Device Name']}}
         </option>
         {% endfor %}
     </select>
+    <noscript><input type="submit" value="Load"></noscript>
+</form>
 
-    <label for="update_incidentID">Incident ID: </label>
+<form class="cuForm" id="update_incident_form" method="POST" action="/IncidentDevices/update">
+    <input type="hidden" name="update_incidentDevices_id" value="{{ selected_incidentDevice['Incident Devices ID'] if selected_incidentDevice else '' }}">
+
+    <label for="update_incident_id">Incident ID: </label>
     <select name="update_incident_id" id="update_incident_id" required>
         <option value="" disabled selected>Select an Incident</option>
         {% for incident in incidents %}
-        <option value="{{incident['incidentID']}}" required>
+        <option value="{{incident['incidentID']}}" {% if selected_incidentDevice and incident['incidentID'] == selected_incidentDevice['Incident ID'] %}selected{% endif %}>
             {{incident['incidentID']}} - {{incident['description']}}
         </option>
         {% endfor %}
     </select>
 
-
-    <label for="update_deviceID">Device ID: </label>
+    <label for="update_device_id">Device ID: </label>
     <select name="update_device_id" id="update_device_id" required>
-        <option value="" disabled selected>Select an Incident</option>
+        <option value="" disabled selected>Select a Device</option>
         {% for device in devices %}
-        <option value="{{device['deviceID']}}" required>
+        <option value="{{device['deviceID']}}" {% if selected_incidentDevice and device['deviceID'] == selected_incidentDevice['Device ID'] %}selected{% endif %}>
             {{device['deviceID']}} - {{device['deviceName']}}
         </option>
         {% endfor %}
     </select>
 
-
-    <input type="submit">
+    <input type="submit" {% if not selected_incidentDevice %}disabled{% endif %}>
 </form>
+
 {# Citation for the following code: #}
 {# Date: 6/2/25 #}
 {# Copied from /OR/ Adapted from /OR/ Based on #}
