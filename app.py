@@ -779,7 +779,7 @@ def delete_incidentDevice():
 
         # Create and execute our queries
         query1 = "CALL sp_DeleteIncidentDevice(%s);"
-        cursor.execute(query1, (incidentDeviceID))
+        cursor.execute(query1, (incidentDeviceID,))
 
         # Commit the changes to the database
         dbConnection.commit()
@@ -869,7 +869,7 @@ def delete_deviceService():
 
         # Create and execute our queries
         query1 = "CALL sp_DeleteDeviceService(%s);"
-        cursor.execute(query1, (deviceServiceID))
+        cursor.execute(query1, (deviceServiceID,))
 
         # Commit the changes to the database
         dbConnection.commit()

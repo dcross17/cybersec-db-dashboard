@@ -92,7 +92,7 @@ BEGIN
         status ENUM('Not Started', 'In Progress', 'Completed'),
 
         FOREIGN KEY (incidentID) REFERENCES Incidents(incidentID) ON DELETE CASCADE ON UPDATE CASCADE,
-        FOREIGN KEY (userID) REFERENCES Users(userID) ON DELETE CASCADE ON UPDATE CASCADE,
+        FOREIGN KEY (userID) REFERENCES Users(userID) ON DELETE SET NULL ON UPDATE CASCADE,
 
         PRIMARY KEY (responseID)
 
@@ -101,8 +101,8 @@ BEGIN
     -- IncidentDevices table
     CREATE TABLE IncidentDevices (
         incidentDevicesID INT AUTO_INCREMENT,
-        incidentID INT,
-        deviceID INT,
+        incidentID INT NOT NULL,
+        deviceID INT NOT NULL,
 
         FOREIGN KEY (incidentID) REFERENCES Incidents(incidentID) ON DELETE CASCADE ON UPDATE CASCADE,
         FOREIGN KEY (deviceID) REFERENCES Devices(deviceID) ON DELETE CASCADE ON UPDATE CASCADE,
