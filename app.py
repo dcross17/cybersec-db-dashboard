@@ -65,8 +65,10 @@ def home():
         print(f"Error rendering page: {e}")
         return "An error occurred while rendering the page.", 500
     
-
-# get users
+# Citation for the following code:
+# Date: 5/19/25
+# Source URL: www.m365.cloud.microsoft (copilot)
+# If AI tools were used: copilot autocomplete was implemented in order to assist with alias creation on the query1 line. Everything else was already present
 @app.route("/Users", methods=["GET"])
 def Users():
     try:
@@ -98,6 +100,10 @@ def Users():
             dbConnection.close()
 
 # get incidents
+# Citation for the following code:
+# Date: 5/19/25
+# Source URL: www.m365.cloud.microsoft (copilot)
+# If AI tools were used: copilot autocomplete was implemented in order to assist with alias creation on the query1 line. Everything else was already present
 @app.route("/Incidents", methods=["GET"])
 def Incidents():
     try:
@@ -136,6 +142,10 @@ def Incidents():
             dbConnection.close()
 
 # get IncidentDevices
+# Citation for the following code:
+# Date: 5/19/25
+# Source URL: www.m365.cloud.microsoft (copilot)
+# If AI tools were used: copilot autocomplete was implemented in order to assist with alias creation on the query1 line. Everything else was already present
 @app.route("/IncidentDevices", methods=["GET"])
 def IncidentDevices():
     try:
@@ -191,6 +201,10 @@ def IncidentDevices():
             dbConnection.close()
 
 # get responses
+# Citation for the following code:
+# Date: 5/19/25
+# Source URL: www.m365.cloud.microsoft (copilot)
+# If AI tools were used: copilot autocomplete was implemented in order to assist with alias creation on the query1 line. Everything else was already present
 @app.route("/Responses", methods=["GET"])
 def Responses():
     try:
@@ -237,6 +251,10 @@ def Responses():
             dbConnection.close()
 
 # get devices
+# Citation for the following code:
+# Date: 5/19/25
+# Source URL: www.m365.cloud.microsoft (copilot)
+# If AI tools were used: copilot autocomplete was implemented in order to assist with alias creation on the query1 line. Everything else was already present
 @app.route("/Devices", methods=["GET"])
 def Devices():
     try:
@@ -278,6 +296,10 @@ def Devices():
             dbConnection.close()
 
 @app.route("/DeviceServices", methods=["GET"])
+# Citation for the following code:
+# Date: 5/19/25
+# Source URL: www.m365.cloud.microsoft (copilot)
+# If AI tools were used: copilot autocomplete was implemented in order to assist with alias creation on the query1 line. Everything else was already present
 def DeviceServices():
     try:
         dbConnection = db.connectDB()  # Open our database connection
@@ -323,6 +345,10 @@ def DeviceServices():
             dbConnection.close()
 
 # get services
+# Citation for the following code:
+# Date: 5/19/25
+# Source URL: www.m365.cloud.microsoft (copilot)
+# If AI tools were used: copilot autocomplete was implemented in order to assist with alias creation on the query1 line. Everything else was already present
 @app.route("/Services", methods=["GET"])
 def Services():
     try:
@@ -357,6 +383,10 @@ def Services():
             dbConnection.close()
 
 # get knownThreats
+# Citation for the following code:
+# Date: 5/19/25
+# Source URL: www.m365.cloud.microsoft (copilot)
+# If AI tools were used: copilot autocomplete was implemented in order to assist with alias creation on the query1 line. Everything else was already present
 @app.route("/KnownThreats", methods=["GET"])
 def KnownThreats():
     try:

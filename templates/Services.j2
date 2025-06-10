@@ -5,6 +5,21 @@
 
 {% extends "main.j2" %}
 {% block content %}
+{# Citation for the following code: #}
+{# Date: 6/8/25 #}
+{# Copied from /OR/ Adapted from /OR/ Based on #}
+{# Adapted from the exploration code with additional error catching using flash - tutorial linked below #}
+{# Source URL: https://www.tutorialspoint.com/flask/flask_message_flashing.htm }
+{# I needed to know how to generate a popup message on an error (duplicate unique fields), I have heard of flash before #}
+{# so I researched from there and found this tutorial. The code is original + adapted from website #}
+{# duplicate popup #}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <script>
+      alert("{{ messages[0] }}");
+    </script>
+  {% endif %}
+{% endwith %}
 
 <div class="flex mb-4">
 {# Citation for the following code: #}

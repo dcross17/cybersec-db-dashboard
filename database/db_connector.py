@@ -1,4 +1,4 @@
-# Citation for the following function:
+# Citation for the following code:
 # Date: 5/6/25
 # Copied from Exploation - Web Application Technology
 # Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-web-application-technology-2?module_item_id=25352948

@@ -1,3 +1,15 @@
+/*citations*/
+/*Citation for the basis of the CSS:*/
+/*Date: 5/9/25*/
+/*Adapted and modified from Tailwinds css tool*/
+/*Source URL: https://tailwindcss.com/*/
+
+/*Citation for Icons*/
+/*Date: 5/9/25*/
+/*Icons from below website*/
+/*Source URL: https://heroicons.com/*/
+
+
 * {
   margin: 0;
   padding: 0;
@@ -11,7 +23,6 @@
 .ibm-plex-sans-100 {
   font-family: "IBM Plex Sans", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 100;
   font-style: normal;
   font-variation-settings: "wdth" 100;
 }
