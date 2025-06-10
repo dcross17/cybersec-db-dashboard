@@ -1,15 +1,199 @@
-h1, h2 { margin-left: 16px;}
-table {border-collapse: collapse;margin-left: 32px;}
-th, td {
-    border: 1px solid #ddd;
-    padding: 12px;
-    text-align: center;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-th {background-color: #f2f2f2;}
-tr:nth-child(even) {background-color: #f9f9f9;}
-.cuForm { margin-left: 32px;}
-input, select { margin-bottom: 4px;margin-right: 12px;}
-nav {background-color: #cecece;padding: 16px;border-radius: 10px;}
-a {margin-left: 16px;}
-.homepageDescription {margin-left: 32px;}
 
+// IBM Plex Sans Font CSS import
+// <weight>: Use a value from 100 to 700
+// <uniquifier>: Use a unique and descriptive class name
+
+.ibm-plex-sans-100 {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 100;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+}
+
+body {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 16px;
+  color: #333;
+  background-color: #f4f4f4;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: center;
+  // white-space: nowrap;
+}
+th {
+  background-color: #f2f2f2;
+  white-space: nowrap;
+  color: rgb(70, 70, 70);
+  font-weight: 500;
+}
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tr:hover {
+  background-color: rgba(220, 220, 220, 0.3);
+}
+
+.cuForm {
+  margin-left: 32px;
+}
+input,
+select {
+  margin-bottom: 4px;
+  margin-right: 12px;
+}
+
+a {
+  margin-left: 16px;
+}
+
+.cuForm {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[type="submit"] {
+  background-color: #4caf50;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+input[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+select:focus {
+  border-color: rgba(44, 86, 202, 0.9);
+  outline: none;
+}
+
+input[type="datetime-local"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+input[type="datetime-local"]:focus,
+textarea:focus,
+input:focus {
+  border-color: rgba(44, 86, 202, 0.9);
+  outline: none;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+/* Sidebar styles */
+li {
+  margin: 0;
+  color: white;
+  font-size: 0.875rem;
+  display: flex;
+  cursor: pointer;
+}
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+ul li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+}
+
+li:hover {
+  background-color: #f0f0f0;
+  border-radius: 4px;
+}
+
+li span svg {
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+  stroke: rgba(102, 102, 102, 0.6);
+}
+
+li:hover > span,
+li:hover > a,
+li:hover span svg {
+  color: rgba(44, 86, 202, 0.9);
+  stroke: rgba(44, 86, 202, 0.9);
+}
+
+.forms-row {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.cuForm {
+  min-height: 450px;
+  padding: 1rem;
+  align-items: end;
+  max-width: 300px;
+}
+
+.cuForm h2 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: rgb(70, 70, 70);
+  text-align: center;
+}
+
+label {
+  margin-bottom: 0.1rem;
+  font-size: 0.875rem;
+  color: #1c1c1c;
+}
+
+.resetButton {
+  border: 1px solid red;
+  border-radius: 0.3em;
+  margin: 1em 0;
+  padding: 0.5em 1em;
+  display: flex;
+}
+
+.resetButton:hover {
+  background-color: red;
+  color: white;
+}
