@@ -9,14 +9,6 @@
 {% block content %}
 
 
-{# Citation for the following code: #}
-{# Date: 6/8/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Adapted from the exploration code with additional error catching using flash - tutorial linked below #}
-{# Source URL: https://www.tutorialspoint.com/flask/flask_message_flashing.htm }
-{# I needed to know how to generate a popup message on an error (duplicate unique fields), I have heard of flash before #}
-{# so I researched from there and found this tutorial. The code is original + adapted from website #}
-{# duplicate popup #}
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <script>
@@ -25,88 +17,7 @@
   {% endif %}
 {% endwith %}
 
-<h1>Users</h1>
-
-{# CREATE form #}
-<h2>Create a User</h2>
-<form class="cuForm" id="create_user_form" method="POST" action = "/Users/create">
-    <label for="create_user_firstName">First Name: </label>
-    <input type="text" name="create_user_firstName" id="create_user_firstName" required>
-
-    <label for="create_user_lastName">Last Name: </label>
-    <input type="text" name="create_user_lastName" id="create_user_lastName" required>
-
-    <label for="create_user_email">Email: </label>
-    <input type="email" name="create_user_email" id="create_user_email" required>
-
-    <label for="create_user_department">Department: </label>
-    <input type="text" name="create_user_department" id="create_user_department" required>
-
-    <label for="create_user_role">Role: </label>
-    <select name="create_user_role" id="create_user_role" required>
-        <option value="" disabled selected>Select a Role</option>
-        <option value="admin">Admin</option>
-        <option value="user">User</option>
-    </select>
-
-    <input type="submit">
-</form>
-
-
-{# Citation for the following code: #}
-{# Date: 6/8/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Starter Code + Copilot assisted in some of the embedded preopulation logic, details below. #}
-{# Source URL: www.m365.cloud.microsoft #}
-{# If AI tools were used: #}
-{# The original Update forms were based on the Flask starter code provided in the explorations. #}
-{# To enable pre-population functionality, I added code to the get routes in the app.py file but was struggling#}
-{# to have the changes populate in the form after severl attempts. I gave copilot the following initial prompt: #}
-{# "How can one populate the update fields upon selection of an object from the dropdown with the following route: *inserted app.py get route*.#}\
-{# "I beleive I am close but cannot locate my error" After some refinement prompts and slight tweaking I arrived at the solution you see below.#}
-{# UPDATE form #}
-<h2>Update a User</h2>
-{# Prepopulate the fields to allow for selective changes #}
-<form method="GET" action="/Users">
-    <label for="update_user_id">User to Update: </label>
-    <select name="user_id" id="update_user_id" required onchange="this.form.submit()">
-        <option value="" disabled {% if not selected_user %}selected{% endif %}>Select a User</option>
-        {% for user in users %}
-        <option value="{{user['User ID']}}" {% if selected_user and user['User ID'] == selected_user['User ID'] %}selected{% endif %}>
-            {{user['User ID']}} {{user['First Name']}} {{user['Last Name']}}
-        </option>
-        {% endfor %}
-    </select>
-    <noscript><input type="submit" value="Load"></noscript>
-</form>
-
-<form class="cuForm" id="update_user_form" method="POST" action="/Users/update">
-    <input type="hidden" name="update_user_id" value="{{ selected_user['User ID'] if selected_user else '' }}">
-    <label for="update_user_firstName">First Name:</label>
-    <input type="text" name="update_user_firstName" id="update_user_firstName"
-           value="{{ selected_user['First Name'] if selected_user else '' }}" required>
-
-    <label for="update_user_lastName">Last Name:</label>
-    <input type="text" name="update_user_lastName" id="update_user_lastName"
-           value="{{ selected_user['Last Name'] if selected_user else '' }}" required>
-
-    <label for="update_user_email">Email: </label>
-    <input type="email" name="update_user_email" id="update_user_email"
-           value="{{ selected_user['Email'] if selected_user else '' }}">
-
-    <label for="update_user_department">Department: </label>
-    <input type="text" name="update_user_department" id="update_user_department"
-           value="{{ selected_user['Department'] if selected_user else '' }}">
-
-    <label for="update_user_role">Role: </label>
-    <select name="update_user_role" id="update_user_role" required>
-        <option value="admin" {% if selected_user and selected_user['Role'] == 'admin' %}selected{% endif %}>admin</option>
-        <option value="user" {% if selected_user and selected_user['Role'] == 'user' %}selected{% endif %}>user</option>
-    </select>
-
-    <input type="submit" {% if not selected_user %}disabled{% endif %}>
-</form>
-
+<div class="flex mb-4">
 {# Citation for the following code: #}
 {# Date: 6/2/25 #}
 {# Copied from /OR/ Adapted from /OR/ Based on #}
@@ -117,8 +28,10 @@
 {# Prompt: When keying into a list as seen in code: ***Removed for brevity, see below*, how can I use a conditional #}
 {# To handle a potentially empty data set. After some refinements we arrived at the solution you see below, which is only #}
 {# slighty modified from the original code #}
-{# READ table #}
-{# READ table #}
+
+
+<div>
+    <h1 class="text-2xl lg:text-3xl font-semibold text-gray-600 mb-4">Users</h1>
 <table>
     <thead>
         {# For the table header row, we print the DB attribute names #}
@@ -127,6 +40,7 @@
             {% for key in users[0].keys() %}
             <th>{{ key }}</th>
             {% endfor %}
+            <th></th>
         {% else %}
             <th colspan="6">No users found.</th>
         {% endif %}
@@ -146,12 +60,16 @@
 
 
             {# DELETE form #}
-            <form id="delete_user_form" method="POST" action = "/Users/delete">
-                <input type="hidden" name="delete_user_id" value="{{ user['User ID'] }}">
-                <input type="hidden" name="delete_user_name" value="{{ user['First Name'] }} {{ user['Last Name'] }}" onsubmit="return confirm('Are you sure you want to delete this device?');">
+            <form id="delete_user_form" method="POST" action = "/Users/delete" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                <input class="text-base px-3 py-2 rounded border border-gray-300 mb-4" type="hidden" name="delete_user_id" value="{{ user['User ID'] }}">
+                <input class="text-base px-3 py-2 rounded border border-gray-300 mb-4" type="hidden" name="delete_user_name" value="{{ user['First Name'] }} {{ user['Last Name'] }}" onsubmit="return confirm('Are you sure you want to delete this device?');">
                 <td>
-                    <button type="submit">
-                        Delete
+                    <button type="submit" class ="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                     </button>
                 </td>
             </form>
@@ -163,10 +81,95 @@
         </tr>
         {% endif %}
     </tbody>
-    
-
 </table>
+</div>
 
+{# CREATE form #}
+<div class = "forms-row flex flex-row gap-4 w-full">
+<form class="cuForm" id="create_user_form" method="POST" action = "/Users/create">
+    <h2>Create a User</h2>
+    <label for="create_user_firstName">First Name</label>
+    <input class="text-base px-3 py-2 rounded border border-gray-300 mb-4" type="text" name="create_user_firstName" id="create_user_firstName" required>
+
+    <label for="create_user_lastName">Last Name</label>
+    <input class="text-base px-3 py-2 rounded border border-gray-300 mb-4" type="text" name="create_user_lastName" id="create_user_lastName" required>
+
+    <label for="create_user_email">Email</label>
+    <input class="text-base px-3 py-2 rounded border border-gray-300 mb-4" type="email" name="create_user_email" id="create_user_email" required>
+
+    <label for="create_user_department">Department</label>
+    <input class="text-base px-3 py-2 rounded border border-gray-300 mb-4" type="text" name="create_user_department" id="create_user_department" required>
+
+    <label for="create_user_role">Role</label>
+    <select class="text-base px-3 py-2 rounded border border-gray-300 mb-4" name="create_user_role" id="create_user_role" required>
+        <option value="" disabled selected>Select a Role</option>
+        <option value="admin">Admin</option>
+        <option value="user">User</option>
+    </select>
+
+    <input class="text-base px-3 py-2 rounded border border-gray-300 mb-4" type="submit">
+</form>
+
+{# UPDATE form #}
+{# Citation for the following code: #}
+{# Date: 6/8/25 #}
+{# Copied from /OR/ Adapted from /OR/ Based on #}
+{# Starter Code + Copilot assisted in some of the embedded preopulation logic, details below. #}
+{# Source URL: www.m365.cloud.microsoft #}
+{# If AI tools were used: #}
+{# The original Update forms were based on the Flask starter code provided in the explorations. #}
+{# To enable pre-population functionality, I added code to the get routes in the app.py file but was struggling#}
+{# to have the changes populate in the form after severl attempts. I gave copilot the following initial prompt: #}
+{# "How can one populate the update fields upon selection of an object from the dropdown with the following route: *inserted app.py get route*.#}
+{# "I beleive I am close but cannot locate my error" After some refinement prompts and slight tweaking I arrived at the solution you see below.#}
+
+
+
+
+
+<div class="cuForm flex flex-col w-full">
+<h2>Update a User</h2>
+<form method="GET" action="/Users">
+        <input type="hidden" name="update_user_id" value="{{ selected_user['User ID'] if selected_user else '' }}">
+        <label for="update_user_id">User to Update</label>
+        <select class="text-base px-3 py-2 rounded border border-gray-300 mb-4" name="user_id" id="update_user_id" required onchange="this.form.submit()">
+            <option value="" disabled {% if not selected_user %}selected{% endif %}>Select a User</option>
+            {% for user in users %}
+            <option value="{{user['User ID']}}" {% if selected_user and user['User ID'] == selected_user['User ID'] %}selected{% endif %}>
+                {{user['User ID']}} {{user['First Name']}} {{user['Last Name']}}
+            </option>
+            {% endfor %}
+        </select>
+        <noscript><input type="submit" value="Load"></noscript>
+    </form>
+<form id="update_user_form" method="POST" action="/Users/update">
+    
+    <input type="hidden" name="update_user_id" value="{{ selected_user['User ID'] if selected_user else '' }}">    
+
+    <label for="update_user_firstName">First Name</label>
+    <input class="text-base px-3 py-2 rounded border border-gray-300 mb-4" type="text" name="update_user_firstName" id="update_user_firstName" value="{{ selected_user['First Name'] if selected_user else '' }}" required>
+
+    <label for="update_user_lastName">Last Name</label>
+    <input class="text-base px-3 py-2 rounded border border-gray-300 mb-4" type="text" name="update_user_lastName" id="update_user_lastName" value="{{ selected_user['Last Name'] if selected_user else '' }}"   required>
+
+    <label for="update_user_email">Email</label>
+    <input class="text-base px-3 py-2 rounded border border-gray-300 mb-4" type="email" name="update_user_email" id="update_user_email" value="{{ selected_user['Email'] if selected_user else '' }}">
+
+    <label for="update_user_department">Department</label>
+    <input class="text-base px-3 py-2 rounded border border-gray-300 mb-4" type="text" name="update_user_department" id="update_user_department" value="{{ selected_user['Department'] if selected_user else '' }}">
+
+    <label for="update_user_role">Role</label>
+    <select class="text-base px-3 py-2 rounded border border-gray-300 mb-4" name="update_user_role" id="update_user_role" required>
+        <option value="admin" {% if selected_user and selected_user['Role'] == 'admin' %}selected{% endif %}>admin</option>
+        <option value="user" {% if selected_user and selected_user['Role'] == 'user' %}selected{% endif %}>user</option>
+    </select>
+
+    <input class="text-base px-3 py-2 rounded border border-gray-300 mb-4" type="submit">
+</form>
+</div>
+
+
+</div>
 
 
 {% endblock %}

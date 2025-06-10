@@ -1,5 +1,9 @@
 -- ###############
 -- RESET Database to sample data
+-- Citation for the following sql code:
+-- Date: 6/9/25
+-- Modified from the base code provided in the PL/SQL Exploration
+-- Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-pl-slash-sql-part-1-sp-view-and-function?module_item_id=25352958
 -- ###############
 DROP PROCEDURE IF EXISTS sp_ResetDB;
 

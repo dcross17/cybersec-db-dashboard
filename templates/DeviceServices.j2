@@ -1,90 +1,7 @@
 {% extends "main.j2" %}
 {% block content %}
 
-<h1>Device Services</h1>
-{# CREATE form #}
-<h2>Create DeviceService</h2>
-<form class="cuForm" id="create_deviceService_form" method="POST" action="/DeviceServices/create">
-    <label for="create_deviceService_firstName">DeviceService Name: </label>
-    <select name="create_deviceService_device" id="create_deviceService_device" required>
-        <option value="" disabled selected>Select a Device</option>
-        {% for device in devices %}
-        <option value="{{device['deviceID']}}" required>
-            {{device['deviceID']}} -
-            {{device['deviceName']}}
-        </option>
-        {% endfor %}
-    </select>
-
-    <select name="create_deviceService_service" id="create_deviceService_service" required>
-        <option value="" disabled selected>Select a Service</option>
-        {% for service in services %}
-        <option value="{{service['serviceID']}}" required>
-            {{service['serviceID']}} -
-            {{service['serviceName']}}
-        </option>
-        {% endfor %}
-    </select>
-
-
-    
-
-    <input type="submit">
-</form>
-
-{# Citation for the following code: #}
-{# Date: 6/8/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Starter Code + Copilot assisted in some of the embedded preopulation logic, details below. #}
-{# Source URL: www.m365.cloud.microsoft #}
-{# If AI tools were used: #}
-{# The original Update forms were based on the Flask starter code provided in the explorations. #}
-{# To enable pre-population functionality, I added code to the get routes in the app.py file but was struggling#}
-{# to have the changes populate in the form after severl attempts. I gave copilot the following initial prompt: #}
-{# "How can one populate the update fields upon selection of an object from the dropdown with the following route: *inserted app.py get route*.#}\
-{# "I beleive I am close but cannot locate my error" After some refinement prompts and slight tweaking I arrived at the solution you see below.#}
-{# UPDATE form #}
-<h2>Update DeviceService</h2>
-{# Prepopulate the fields to allow for selective changes #}
-<form method="GET" action="/DeviceServices">
-    <label for="update_deviceService_id">DeviceService to Update: </label>
-    <select name="deviceService_id" id="update_deviceService_id" required onchange="this.form.submit()">
-        <option value="" disabled {% if not selected_deviceService %}selected{% endif %}>Select a DeviceService</option>
-        {% for deviceService in deviceServices %}
-        <option value="{{deviceService['Device Service ID']}}" {% if selected_deviceService and deviceService['Device Service ID'] == selected_deviceService['Device Service ID'] %}selected{% endif %}>
-            {{deviceService['Device Service ID']}}
-        </option>
-        {% endfor %}
-    </select>
-    <noscript><input type="submit" value="Load"></noscript>
-</form>
-
-<form class="cuForm" id="update_deviceService_form" method="POST" action="/DeviceServices/update">
-    <input type="hidden" name="update_deviceService_id" value="{{ selected_deviceService['Device Service ID'] if selected_deviceService else '' }}">
-
-    <label for="update_deviceService_device">Device: </label>
-    <select name="update_deviceService_device" id="update_deviceService_device" required>
-        <option value="" disabled selected>Select a Device</option>
-        {% for device in devices %}
-        <option value="{{device['deviceID']}}" {% if selected_deviceService and device['deviceID'] == selected_deviceService['Device ID'] %}selected{% endif %}>
-            {{device['deviceID']}} - {{device['deviceName']}}
-        </option>
-        {% endfor %}
-    </select>
-
-    <label for="update_deviceService_service">Service: </label>
-    <select name="update_deviceService_service" id="update_deviceService_service" required>
-        <option value="" disabled selected>Select a Service</option>
-        {% for service in services %}
-        <option value="{{service['serviceID']}}" {% if selected_deviceService and service['serviceID'] == selected_deviceService['Service ID'] %}selected{% endif %}>
-            {{service['serviceID']}} - {{service['serviceName']}}
-        </option>
-        {% endfor %}
-    </select>
-
-    <input type="submit" {% if not selected_deviceService %}disabled{% endif %}>
-</form>
-
+<div class="flex mb-4">
 {# Citation for the following code: #}
 {# Date: 6/2/25 #}
 {# Copied from /OR/ Adapted from /OR/ Based on #}
@@ -97,6 +14,8 @@
 {# slighty modified from the original code #}
 
 {# READ table #}
+<div>
+    <h1 class="text-2xl lg:text-3xl font-semibold text-gray-600 mb-4">Running Services</h1>
 <table>
     <thead>
         <tr>
@@ -118,11 +37,17 @@
                 <td>{{ deviceService['Device ID'] }}</td>
                 <td>{{ deviceService['Service ID'] }}</td>
                 <td>
-                    <form id="delete_deviceService_form" method="POST" action="/DeviceServices/delete" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this device?');">
-                        <input type="hidden" name="delete_deviceService_id" value="{{ deviceService['Device Service ID'] }}">
-                        <input type="hidden" name="delete_device_id" value="{{ deviceService['Device ID'] }}">
-                        <input type="hidden" name="delete_service_id" value="{{ deviceService['Service ID'] }}">
-                        <button type="submit">Delete</button>
+                    <form id="delete_deviceService_form" method="POST" action="/DeviceServices/delete" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this intersection?');">
+                        <input class="text-base px-3 py-2 rounded border border-gray-300 mb-4" type="hidden" name="delete_deviceService_id" value="{{ deviceService['Device Service ID'] }}">
+                        <input class="text-base px-3 py-2 rounded border border-gray-300 mb-4" type="hidden" name="delete_device_id" value="{{ deviceService['Device ID'] }}">
+                        <input class="text-base px-3 py-2 rounded border border-gray-300 mb-4" type="hidden" name="delete_service_id" value="{{ deviceService['Service ID'] }}">
+                        <button type="submit" class ="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
                     </form>
                 </td>
             </tr>
@@ -134,7 +59,93 @@
         {% endif %}
     </tbody>
 </table>
+</div>
 
+{# CREATE form #}
+<div class = "forms-row flex flex-row gap-4 w-full">
+<form class="cuForm" id="create_deviceService_form" method="POST" action="/DeviceServices/create">
+    <h2>Create a Device-Service Intersection</h2>
+    <label for="create_deviceService_firstName">Device</label>
+    <select class="text-base px-3 py-2 rounded border border-gray-300 mb-4" name="create_deviceService_device" id="create_deviceService_device" required>
+        <option value="" disabled selected>Select a Device</option>
+        {% for device in devices %}
+        <option value="{{device['deviceID']}}" required>
+            {{device['deviceID']}} -
+            {{device['deviceName']}}
+        </option>
+        {% endfor %}
+    </select>
 
+    <label for="create_deviceService_service">Service</label>
+    <select class="text-base px-3 py-2 rounded border border-gray-300 mb-4" name="create_deviceService_service" id="create_deviceService_service" required>
+        <option value="" disabled selected>Select a Service</option>
+        {% for service in services %}
+        <option value="{{service['serviceID']}}" required>
+            {{service['serviceID']}} -
+            {{service['serviceName']}}
+        </option>
+        {% endfor %}
+    </select>
 
+    <input class="text-base px-3 py-2 rounded border border-gray-300 mb-4" type="submit">
+</form>
+
+{# UPDATE form #}
+{# Citation for the following code: #}
+{# Date: 6/8/25 #}
+{# Copied from /OR/ Adapted from /OR/ Based on #}
+{# Starter Code + Copilot assisted in some of the embedded preopulation logic, details below. #}
+{# Source URL: www.m365.cloud.microsoft #}
+{# If AI tools were used: #}
+{# The original Update forms were based on the Flask starter code provided in the explorations. #}
+{# To enable pre-population functionality, I added code to the get routes in the app.py file but was struggling#}
+{# to have the changes populate in the form after severl attempts. I gave copilot the following initial prompt: #}
+{# "How can one populate the update fields upon selection of an object from the dropdown with the following route: *inserted app.py get route*.#}
+{# "I beleive I am close but cannot locate my error" After some refinement prompts and slight tweaking I arrived at the solution you see below.#}
+
+<div class="cuForm flex flex-col w-full">
+    <h2>Update a Device-Service Intersection</h2>
+
+    <form method="GET" action="/DeviceServices">
+    <label for="update_deviceService_id">Device-Service Intersection ID</label>
+    <select class="text-base px-3 py-2 rounded border border-gray-300 mb-4" name="deviceService_id" id="update_deviceService_id" required onchange="this.form.submit()">
+        <option value="" disabled {% if not selected_deviceService %}selected{% endif %}>Select a DeviceService</option>
+        {% for deviceService in deviceServices %}
+        <option value="{{deviceService['Device Service ID']}}" {% if selected_deviceService and deviceService['Device Service ID'] == selected_deviceService['Device Service ID'] %}selected{% endif %}>
+            {{deviceService['Device Service ID']}}
+        </option>
+        {% endfor %}
+    </select>
+    <noscript><input type="submit" value="Load"></noscript>
+</form>
+
+<form id="update_deviceService_form" method="POST" action="/DeviceServices/update">
+    
+    
+    <input type="hidden" name="update_deviceService_id" value="{{ selected_deviceService['Device Service ID'] if selected_deviceService else '' }}">
+
+    <label for="update_deviceService_device">Device</label>
+    <select class="text-base px-3 py-2 rounded border border-gray-300 mb-4" name="update_deviceService_device" id="update_deviceService_device" required>
+        <option value="" disabled selected>Select a Device</option>
+        {% for device in devices %}
+        <option value="{{device['deviceID']}}" {% if selected_deviceService and device['deviceID'] == selected_deviceService['Device ID'] %}selected{% endif %}>
+            {{device['deviceID']}} - {{device['deviceName']}}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label for="update_deviceService_service">Service</label>
+    <select class="text-base px-3 py-2 rounded border border-gray-300 mb-4" name="update_deviceService_service" id="update_deviceService_service" required>
+        <option value="" disabled selected>Select a Service</option>
+        {% for service in services %}
+        <option value="{{service['serviceID']}}" {% if selected_deviceService and service['serviceID'] == selected_deviceService['Service ID'] %}selected{% endif %}>
+            {{service['serviceID']}} - {{service['serviceName']}}
+        </option>
+        {% endfor %}
+    </select>
+
+    <input class="text-base px-3 py-2 rounded border border-gray-300 mb-4" type="submit" {% if not selected_deviceService %}disabled{% endif %}>
+</form>
+</div>
+<div>
 {% endblock %}

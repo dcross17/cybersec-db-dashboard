@@ -1,6 +1,6 @@
-# Citation for the following function:
+# Citation for the following routes:
 # Date: 5/6/25
-# Adapted from Exploation - Web Application Technology
+# Base code was for routes was adapted from Exploation - Web Application Technology
 # Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-web-application-technology-2?module_item_id=25352948
 
 
@@ -391,6 +391,11 @@ def KnownThreats():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+# Citation for the following routes:
+# Date: 5/6/25
+# Base code was for routes was adapted from Exploation - Implementing CUD Operations Into Your App
+# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-implementing-cud-operations-in-your-app?module_item_id=25352968
+# base code was augumented with some original code
 
 # CREATE ROUTES START
 @app.route("/Users/create", methods=["POST"])
@@ -705,6 +710,11 @@ def create_knownThreat():
 
 
 
+# Citation for the following routes:
+# Date: 5/6/25
+# Base code was for routes was adapted from Exploation - Implementing CUD Operations Into Your App
+# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-implementing-cud-operations-in-your-app?module_item_id=25352968
+# base code was augumented with some original code
 
 # DELETE ROUTES START
 @app.route("/Users/delete", methods=["POST"])
@@ -950,6 +960,12 @@ def delete_knownThreat():
 
 # DELETE ROUTES END
 
+
+# Citation for the following routes:
+# Date: 5/6/25
+# Base code was for routes was adapted from Exploation - Implementing CUD Operations Into Your App
+# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-implementing-cud-operations-in-your-app?module_item_id=25352968
+# base code was augumented with some original code
 # UPDATE ROUTES START
 
 # update users
