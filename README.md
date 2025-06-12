@@ -1,4 +1,4 @@
-This project originated as a collaboration with [Dawson Herrington](https://github.com/dawson-herrington) for Oregon State University's CS340 (Spring 2025). This version includes my personal UI layout, CRUD logic, and post-submission improvements.
+Disclaimer: This project originated as a collaboration with [Dawson Herrington](https://github.com/dawson-herrington) for Oregon State University's CS340 (Spring 2025) Class Project. This version includes my personal UI layout, CRUD logic, and post-submission improvements.
 
 # CS340-Project
 All code is based originally (then modified) on the CS340 starter code except:
