@@ -1,3 +1,4 @@
+-- Active: 1746477031140@@127.0.0.1@3306@netsec_db
 -- ###############
 -- RESET Database to sample data
 -- Citation for the following sql code:
@@ -7,12 +8,22 @@
 -- ###############
 DROP PROCEDURE IF EXISTS sp_ResetDB;
 
-DELIMITER //
+
 CREATE PROCEDURE sp_ResetDB()
 BEGIN
 
     -- Table drops for testing purposes
-    DROP TABLE IF EXISTS DeviceServices;
+    DROP TABLE IF EXISTS DeviceServices;-- KnownThreats table
+    CREATE TABLE KnownThreats (
+        threatID INT AUTO_INCREMENT not NULL UNIQUE,
+        name VARCHAR(100) not NULL,
+        type ENUM('Malware', 'Exploit', 'Tool', 'Other'),
+        description TEXT,
+        dateFirstSeen DATETIME,
+        dateLastSeen DATETIME,
+
+        PRIMARY KEY (threatID)
+    );
     DROP TABLE IF EXISTS IncidentDevices;
     DROP TABLE IF EXISTS Responses;
     DROP TABLE IF EXISTS Incidents;
@@ -182,7 +193,7 @@ BEGIN
     (1, 2),
     (2, 3),
     (3, 4);
-END //
+END;
 
 
 
@@ -190,7 +201,7 @@ END //
 
 
 
-DELIMITER //
+
 -- Delete Procedures
 CREATE PROCEDURE sp_DeleteUser(IN u_id INT)
 BEGIN
@@ -216,7 +227,7 @@ BEGIN
     
     COMMIT;
 
-END //
+END;
 
 -- Create/Insert Procedures
 CREATE PROCEDURE sp_CreateUser(
@@ -252,7 +263,7 @@ BEGIN
 
     COMMIT;
 
-END //
+END;
 
 CREATE PROCEDURE sp_CreateIncident(
     IN p_timeOccurred DATETIME, IN p_description TEXT,
@@ -287,7 +298,7 @@ BEGIN
 
     COMMIT;
 
-END //
+END;
 
 CREATE PROCEDURE sp_CreateIncidentDevice(
     IN p_incidentID INT, IN p_deviceID INT
@@ -320,7 +331,7 @@ BEGIN
 
     COMMIT;
 
-END //
+END;
 
 CREATE PROCEDURE sp_CreateResponse(
     IN p_incidentID INT, IN p_userID INT, IN p_timeStarted DATETIME,
@@ -356,7 +367,7 @@ BEGIN
 
     COMMIT;
 
-END //
+END;
 
 CREATE PROCEDURE sp_CreateDevice(
     IN p_deviceName VARCHAR(100), IN p_IPAddress VARCHAR(100),
@@ -392,7 +403,7 @@ BEGIN
 
     COMMIT;
 
-END //
+END;
 
 CREATE PROCEDURE sp_CreateDeviceService(
     IN p_deviceID INT, IN p_serviceID INT
@@ -426,7 +437,7 @@ BEGIN
 
     COMMIT;
 
-END //
+END;
 
 CREATE PROCEDURE sp_CreateService(
     IN p_serviceName VARCHAR(100), IN p_port INT,
@@ -461,7 +472,7 @@ BEGIN
 
     COMMIT;
 
-END //
+END;
 
 CREATE PROCEDURE sp_CreateKnownThreat(
     IN p_name VARCHAR(100), IN p_type ENUM('Malware', 'Exploit', 'Tool', 'Other'),
@@ -496,7 +507,7 @@ BEGIN
 
     COMMIT;
 
-END //
+END;
 
 
 
@@ -524,7 +535,7 @@ BEGIN
     
     COMMIT;
 
-END //
+END;
 
 CREATE PROCEDURE sp_DeleteIncidentDevice(IN incDev_id INT)
 BEGIN
@@ -550,7 +561,7 @@ BEGIN
     
     COMMIT;
 
-END //
+END;
 
 CREATE PROCEDURE sp_DeleteResponse(IN r_id INT)
 BEGIN
@@ -576,7 +587,7 @@ BEGIN
     
     COMMIT;
 
-END //
+END;
 
 CREATE PROCEDURE sp_DeleteDevice(IN dev_id INT)
 BEGIN
@@ -602,7 +613,7 @@ BEGIN
     
     COMMIT;
 
-END //
+END;
 
 CREATE PROCEDURE sp_DeleteDeviceService(IN devServ_id INT)
 BEGIN
@@ -628,7 +639,7 @@ BEGIN
     
     COMMIT;
 
-END //
+END;
 
 CREATE PROCEDURE sp_DeleteService(IN serv_id INT)
 BEGIN
@@ -654,7 +665,7 @@ BEGIN
     
     COMMIT;
 
-END //
+END;
 
 CREATE PROCEDURE sp_DeleteKnownThreat(IN threat_id INT)
 BEGIN
@@ -680,18 +691,18 @@ BEGIN
     
     COMMIT;
     
-END //
+END;
 
 
 
 
-DELIMITER ;
+
 
 -- update Procedures
 
 -- update Users
 DROP PROCEDURE IF EXISTS sp_UpdateUser;
-DELIMITER //
+
 CREATE PROCEDURE sp_UpdateUser(
     IN p_userID INT, IN p_firstName VARCHAR(100), IN p_lastName VARCHAR(100),
     IN p_email VARCHAR(200), IN p_department VARCHAR(100), IN p_role ENUM('admin', 'user')
@@ -703,11 +714,11 @@ BEGIN
     WHERE userID = p_userID;
 
 END
-DELIMITER ;
+
 
 -- update Incidents
 DROP PROCEDURE IF EXISTS sp_UpdateIncident;
-DELIMITER //
+
 CREATE PROCEDURE sp_UpdateIncident(
     IN p_incidentID INT, IN p_timeOccurred DATETIME, IN p_description TEXT,
     IN p_priority INT, IN p_status ENUM('Not Started', 'In Progress', 'Completed'),
@@ -718,12 +729,12 @@ BEGIN
     priority = p_priority, status = p_status, threatID = p_threatID
     WHERE incidentID = p_incidentID;
 
-END //
-DELIMITER ;
+END;
+
 
 -- update IncidentDevices
 DROP PROCEDURE IF EXISTS sp_UpdateIncidentDevice;
-DELIMITER //
+
 CREATE PROCEDURE sp_UpdateIncidentDevice(
     IN p_incidentDevicesID INT, IN p_incidentID INT, IN p_deviceID INT
 )
@@ -731,12 +742,12 @@ BEGIN
     UPDATE IncidentDevices SET incidentID = p_incidentID, deviceID = p_deviceID
     WHERE incidentDevicesID = p_incidentDevicesID;
 
-END //
-DELIMITER ;
+END;
+
 
 -- update Responses
 DROP PROCEDURE IF EXISTS sp_UpdateResponse;
-DELIMITER //
+
 CREATE PROCEDURE sp_UpdateResponse(
     IN p_responseID INT, IN p_timeStarted DATETIME, IN p_timeEnded DATETIME,
     IN p_actionPerformed TEXT, IN p_status ENUM('Not Started', 'In Progress', 'Completed')
@@ -746,12 +757,12 @@ BEGIN
     actionPerformed = p_actionPerformed, status = p_status
     WHERE responseID = p_responseID;
 
-END //
-DELIMITER ;
+END;
+
 
 -- update Devices
 DROP PROCEDURE IF EXISTS sp_UpdateDevice;
-DELIMITER //
+
 CREATE PROCEDURE sp_UpdateDevice(
     IN p_deviceID INT, IN p_deviceName VARCHAR(100), IN p_IPAddress VARCHAR(100),
     IN p_deviceType ENUM('Server', 'PC', 'VM', 'Other'), IN p_status ENUM('Active', 'Offline', 'Disabled'),
@@ -762,12 +773,12 @@ BEGIN
     deviceType = p_deviceType, status = p_status, assignedTo = p_assignedTo
     WHERE deviceID = p_deviceID;
 
-END //
-DELIMITER ;
+END;
+
 
 -- update DeviceServices
 DROP PROCEDURE IF EXISTS sp_UpdateDeviceService;
-DELIMITER //
+
 CREATE PROCEDURE sp_UpdateDeviceService(
     IN p_deviceServiceID INT, IN p_deviceID INT, IN p_serviceID INT
 )
@@ -775,12 +786,12 @@ BEGIN
     UPDATE DeviceServices SET deviceID = p_deviceID, serviceID = p_serviceID
     WHERE deviceServiceID = p_deviceServiceID;
 
-END //
-DELIMITER ;
+END;
+
 
 -- update Services
 DROP PROCEDURE IF EXISTS sp_UpdateService;
-DELIMITER //
+
 CREATE PROCEDURE sp_UpdateService(
     IN p_serviceID INT, IN p_serviceName VARCHAR(100), IN p_port INT,
     IN p_protocol ENUM('TCP', 'UDP', 'Other')
@@ -789,12 +800,12 @@ BEGIN
     UPDATE Services SET serviceName = p_serviceName, port = p_port, protocol = p_protocol
     WHERE serviceID = p_serviceID;
 
-END //
-DELIMITER ;
+END;
+
 
 -- update KnownThreats
 DROP PROCEDURE IF EXISTS sp_UpdateKnownThreat;
-DELIMITER //
+
 CREATE PROCEDURE sp_UpdateKnownThreat(
     IN p_threatID INT, IN p_name VARCHAR(100), IN p_type ENUM('Malware', 'Exploit', 'Tool', 'Other'),
     IN p_description TEXT, IN p_dateFirstSeen DATETIME, IN p_dateLastSeen DATETIME
@@ -804,5 +815,4 @@ BEGIN
     dateFirstSeen = p_dateFirstSeen, dateLastSeen = p_dateLastSeen
     WHERE threatID = p_threatID;
 
-END //
-DELIMITER ;
+END;

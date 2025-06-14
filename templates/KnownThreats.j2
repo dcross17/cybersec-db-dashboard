@@ -114,7 +114,7 @@
 
 <form method="GET" action="/KnownThreats">
     <label for="update_knownThreat_id">Threat to Update: </label>
-    <select name="threat_id" id="update_knownThreat_id" required onchange="this.form.submit()">
+    <select class="text-base px-3 py-2 rounded border border-gray-300 mb-4" name="threat_id" id="update_knownThreat_id" required onchange="this.form.submit()">
         <option value="" disabled {% if not selected_knownThreat %}selected{% endif %}>Select a knownThreat</option>
         {% for knownThreat in knownThreats %}
         <option value="{{knownThreat['Threat ID']}}" {% if selected_knownThreat and knownThreat['Threat ID'] == selected_knownThreat['Threat ID'] %}selected{% endif %}>

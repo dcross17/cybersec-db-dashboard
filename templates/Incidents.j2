@@ -60,7 +60,7 @@
                     </span>    
                 </td>
                 <td>{{ incident['Status'] }}</td>
-                <td>{{ incident['Threat ID'] }}</td>
+                <td>{{ incident['Threat'] }}</td>
                 <td>
                     <form id="delete_incident_form" method="POST" action="/Incidents/delete" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this incident?');">
                         <input type="hidden" name="delete_incident_id" value="{{ incident['Incident ID'] }}">

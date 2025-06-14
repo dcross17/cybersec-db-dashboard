@@ -15,19 +15,20 @@ PORT = 49124
 app = Flask(__name__)
 
 # secret key to fascilitate flash messages - I know nothing about encryption so used a string - Dawson - citation in routes section
-app.secret_key = "imagine_that_this_has_fancy_encryption"  
+app.secret_key = "imagine_that_this_has_fancy_encryption"
 # ########################################
 # ########## ROUTE HANDLERS
 
 # RESET ROUTE
 # Citation for the following code:
 # Date: 5/20/25
-# Copied from /OR/ Adapted from /OR/ Based on 
+# Copied from /OR/ Adapted from /OR/ Based on
 # Adapted from the CUD Operations exploration with a small amount of copilot, described below
 # Source URL: www.m365.cloud.microsoft
 # If AI tools were used: The online line that copilot helped with was the callproc. All other code
 # was adapted from our class materials. I could not figure out how to call a procedure with a cursor in this
 # context. Prompt used: "How do I call a stored procedure with a cursor in a route handler in Flask?"
+
 
 # reset route
 @app.route("/reset", methods=["POST"])
@@ -49,11 +50,12 @@ def reset():
     except Exception as e:
         print(f"Error resetting database: {e}")
         return "An error occurred while resetting the database.", 500
-    
+
     finally:
         # Close the DB connection, if it exists
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
+
 
 # READ ROUTES
 @app.route("/", methods=["GET"])
@@ -64,7 +66,8 @@ def home():
     except Exception as e:
         print(f"Error rendering page: {e}")
         return "An error occurred while rendering the page.", 500
-    
+
+
 # Citation for the following code:
 # Date: 5/19/25
 # Source URL: www.m365.cloud.microsoft (copilot)
@@ -77,7 +80,7 @@ def Users():
         # Create and execute our queries
         query1 = "SELECT Users.userID as 'User ID', Users.firstName as 'First Name', Users.lastName as 'Last Name', Users.email as Email, Users.department as Department, Users.role as 'Role' FROM Users;"
         users = db.query(dbConnection, query1).fetchall()
-        
+
         # send the user to the update form if one is selected during an update attempt
         selected_user = None
         user_id = request.args.get("user_id")
@@ -86,9 +89,7 @@ def Users():
             selected_user = db.query(dbConnection, query2, (user_id,)).fetchone()
 
         # Render the users j2 file, and also send the renderer
-        return render_template(
-            "Users.j2", users=users, selected_user=selected_user
-        )
+        return render_template("Users.j2", users=users, selected_user=selected_user)
 
     except Exception as e:
         print(f"Error executing queries: {e}")
@@ -98,6 +99,7 @@ def Users():
         # Close the DB connection, if it exists
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
+
 
 # get incidents
 # Citation for the following code:
@@ -110,9 +112,14 @@ def Incidents():
         dbConnection = db.connectDB()  # Open our database connection
 
         # Create and execute our queries
-        query1 = "SELECT Incidents.incidentID as 'Incident ID', Incidents.timeOccurred as 'Time Occurred', Incidents.description as 'Description', Incidents.priority as Priority, Incidents.status as 'Status', Incidents.threatID as 'Threat ID' FROM Incidents;"
+        query1 = (
+            "SELECT Incidents.incidentID as 'Incident ID', Incidents.timeOccurred as 'Time Occurred', Incidents.description as 'Description', Incidents.priority as Priority, Incidents.status as 'Status', KnownThreats.name as 'Threat' "
+            "FROM Incidents "
+            "JOIN KnownThreats ON Incidents.threatID = KnownThreats.threatID;"
+        )
+
         incidents = db.query(dbConnection, query1).fetchall()
-        
+
         # Query to get all incidents so we can display them in the dropdown
         query2 = "SELECT KnownThreats.threatID, KnownThreats.name FROM KnownThreats;"
         threats = db.query(dbConnection, query2).fetchall()
@@ -122,14 +129,16 @@ def Incidents():
         incident_id = request.args.get("incident_id")
         if incident_id:
             query3 = "SELECT Incidents.incidentID as 'Incident ID', Incidents.timeOccurred as 'Time Occurred', Incidents.description as 'Description', Incidents.priority as Priority, Incidents.status as 'Status', Incidents.threatID as 'Threat ID' FROM Incidents WHERE Incidents.incidentID = %s;"
-            selected_incident = db.query(dbConnection, query3, (incident_id,)).fetchone()
+            selected_incident = db.query(
+                dbConnection, query3, (incident_id,)
+            ).fetchone()
 
         # Render the incidents j2 file, and also send the renderer
         return render_template(
-            "Incidents.j2", 
+            "Incidents.j2",
             incidents=incidents,
             threats=threats,
-            selected_incident=selected_incident
+            selected_incident=selected_incident,
         )
 
     except Exception as e:
@@ -140,6 +149,7 @@ def Incidents():
         # Close the DB connection, if it exists
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
+
 
 # get IncidentDevices
 # Citation for the following code:
@@ -152,27 +162,32 @@ def IncidentDevices():
         dbConnection = db.connectDB()  # Open our database connection
 
         # Create and execute our queries
-        query1 = "SELECT IncidentDevices.incidentDevicesID as 'Incident Devices ID', IncidentDevices.incidentID as 'Incident ID', IncidentDevices.deviceID as 'Device ID' "\
-        "FROM IncidentDevices;"
+        query1 = (
+            "SELECT IncidentDevices.incidentDevicesID as 'Incident Devices ID', IncidentDevices.incidentID as 'Incident ID', IncidentDevices.deviceID as 'Device ID' "
+            "FROM IncidentDevices;"
+        )
 
         incidentDevices = db.query(dbConnection, query1).fetchall()
-        
+
         # Query to get all incidents so we can display them in the dropdown
-        query2 = "SELECT Incidents.incidentID, Incidents.description " \
-        "FROM Incidents;"
+        query2 = "SELECT Incidents.incidentID, Incidents.description " "FROM Incidents;"
         incidents = db.query(dbConnection, query2).fetchall()
 
         # Query to get all devices so we can display them in the dropdown
-        query3 = "SELECT Devices.deviceID, Devices.deviceName " \
-        "FROM Devices " \
-        "ORDER BY Devices.deviceID ASC;"
+        query3 = (
+            "SELECT Devices.deviceID, Devices.deviceName "
+            "FROM Devices "
+            "ORDER BY Devices.deviceID ASC;"
+        )
         devices = db.query(dbConnection, query3).fetchall()
 
-        #Get join query to get all incidentDevices with device names and incident descriptions and threat names
-        query4 = "SELECT IncidentDevices.incidentDevicesID, Incidents.description as 'Incident Description', Devices.deviceName as 'Device Name' " \
-        "FROM IncidentDevices " \
-        "JOIN Incidents ON IncidentDevices.incidentID = Incidents.incidentID " \
-        "JOIN Devices ON IncidentDevices.deviceID = Devices.deviceID;"
+        # Get join query to get all incidentDevices with device names and incident descriptions and threat names
+        query4 = (
+            "SELECT IncidentDevices.incidentDevicesID, Incidents.description as 'Incident Description', Devices.deviceName as 'Device Name' "
+            "FROM IncidentDevices "
+            "JOIN Incidents ON IncidentDevices.incidentID = Incidents.incidentID "
+            "JOIN Devices ON IncidentDevices.deviceID = Devices.deviceID;"
+        )
         incDevInfo = db.query(dbConnection, query4).fetchall()
 
         # send the data to the update form if one is selected during an update attempt
@@ -180,15 +195,18 @@ def IncidentDevices():
         incidentDevices_id = request.args.get("incidentDevices_id")
         if incidentDevices_id:
             query5 = "SELECT IncidentDevices.incidentDevicesID as 'Incident Devices ID', IncidentDevices.incidentID as 'Incident ID', IncidentDevices.deviceID as 'Device ID' FROM IncidentDevices WHERE IncidentDevices.incidentDevicesID = %s;"
-            selected_incidentDevice = db.query(dbConnection, query5, (incidentDevices_id,)).fetchone()
+            selected_incidentDevice = db.query(
+                dbConnection, query5, (incidentDevices_id,)
+            ).fetchone()
 
         # Render the incidents j2 file, and also send the renderer
         return render_template(
-            "IncidentDevices.j2", incidentDevices=incidentDevices,
+            "IncidentDevices.j2",
+            incidentDevices=incidentDevices,
             incidents=incidents,
             devices=devices,
             incDevInfo=incDevInfo,
-            selected_incidentDevice=selected_incidentDevice
+            selected_incidentDevice=selected_incidentDevice,
         )
 
     except Exception as e:
@@ -199,6 +217,7 @@ def IncidentDevices():
         # Close the DB connection, if it exists
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
+
 
 # get responses
 # Citation for the following code:
@@ -211,14 +230,16 @@ def Responses():
         dbConnection = db.connectDB()  # Open our database connection
 
         # Create and execute our queries
-        query1 = "SELECT Responses.responseID as 'Response ID', Responses.incidentID as 'Incident ID', Responses.userID as 'User ID', Responses.timeStarted as 'Time Started', Responses.timeEnded as 'Time Ended', Responses.actionPerformed as 'Action Performed', Responses.status as 'Status' "\
-        "FROM Responses;"
+        query1 = (
+            "SELECT Responses.responseID as 'Response ID', Responses.incidentID as 'Incident ID', CONCAT(Users.firstName, ' ', Users.lastName) as 'User' , Responses.timeStarted as 'Time Started', Responses.timeEnded as 'Time Ended', Responses.actionPerformed as 'Action Performed', Responses.status as 'Status' "
+            "FROM Responses "
+            "JOIN Users ON Responses.userID = Users.userID;"
+        )
 
         responses = db.query(dbConnection, query1).fetchall()
-        
+
         # Query to get all users so we can display them in the dropdown
-        query2 = "SELECT Users.userID, Users.firstName, Users.lastName " \
-        "FROM Users;"
+        query2 = "SELECT Users.userID, Users.firstName, Users.lastName " "FROM Users;"
         users = db.query(dbConnection, query2).fetchall()
 
         # Query to get all incidents so we can display them in the dropdown
@@ -230,15 +251,17 @@ def Responses():
         response_id = request.args.get("response_id")
         if response_id:
             query4 = "SELECT Responses.responseID as 'Response ID', Responses.incidentID as 'Incident ID', Responses.userID as 'User ID', Responses.timeStarted as 'Time Started', Responses.timeEnded as 'Time Ended', Responses.actionPerformed as 'Action Performed', Responses.status as 'Status' FROM Responses WHERE Responses.responseID = %s;"
-            selected_response = db.query(dbConnection, query4, (response_id,)).fetchone()
+            selected_response = db.query(
+                dbConnection, query4, (response_id,)
+            ).fetchone()
 
         # Render the responses j2 file, and also send the renderer
         return render_template(
-            "Responses.j2", 
+            "Responses.j2",
             responses=responses,
             users=users,
             incidents=incidents,
-            selected_response=selected_response
+            selected_response=selected_response,
         )
 
     except Exception as e:
@@ -249,6 +272,7 @@ def Responses():
         # Close the DB connection, if it exists
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
+
 
 # get devices
 # Citation for the following code:
@@ -261,14 +285,15 @@ def Devices():
         dbConnection = db.connectDB()  # Open our database connection
 
         # Create and execute our queries
-        query1 = "SELECT Devices.deviceID as 'Device ID', Devices.deviceName as 'Device Name', Devices.IPAddress as 'IP Address', Devices.deviceType as 'Device Type', Devices.status as 'Status', Devices.assignedTo as 'Assigned To' " \
-        "FROM Devices " \
-        
+        query1 = (
+            "SELECT Devices.deviceID as 'Device ID', Devices.deviceName as 'Device Name', Devices.IPAddress as 'IP Address', Devices.deviceType as 'Device Type', Devices.status as 'Status', CONCAT(Users.firstName, ' ', Users.lastName) as 'Assigned To' "
+            "FROM Devices "
+            "JOIN Users ON Devices.assignedTo = Users.userID;"
+        )
         devices = db.query(dbConnection, query1).fetchall()
 
         # Query to get all users so we can display them in the dropdown
-        query2 = "SELECT Users.userID, Users.firstName, Users.lastName " \
-        "FROM Users;"
+        query2 = "SELECT Users.userID, Users.firstName, Users.lastName " "FROM Users;"
         users = db.query(dbConnection, query2).fetchall()
 
         # send the data to the update form if one is selected during an update attempt
@@ -280,10 +305,7 @@ def Devices():
 
         # Render the devices j2 file, and also send the renderer
         return render_template(
-            "Devices.j2", 
-            devices=devices,
-            users=users,
-            selected_device=selected_device
+            "Devices.j2", devices=devices, users=users, selected_device=selected_device
         )
 
     except Exception as e:
@@ -294,6 +316,7 @@ def Devices():
         # Close the DB connection, if it exists
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
+
 
 @app.route("/DeviceServices", methods=["GET"])
 # Citation for the following code:
@@ -305,18 +328,20 @@ def DeviceServices():
         dbConnection = db.connectDB()  # Open our database connection
 
         # Create and execute our queries
-        query1 = "SELECT DeviceServices.deviceServiceID as 'Device Service ID', DeviceServices.deviceID as 'Device ID', DeviceServices.serviceID as 'Service ID' " \
-        "FROM DeviceServices; "
+        query1 = (
+            "SELECT DeviceServices.deviceServiceID as 'Device Service ID', DeviceServices.deviceID as 'Device ID', DeviceServices.serviceID as 'Service ID' "
+            "FROM DeviceServices; "
+        )
         deviceServices = db.query(dbConnection, query1).fetchall()
 
-        query2 = "SELECT deviceID, deviceName " \
-        "FROM Devices " \
-        "ORDER BY deviceID ASC; "
+        query2 = (
+            "SELECT deviceID, deviceName " "FROM Devices " "ORDER BY deviceID ASC; "
+        )
         devices = db.query(dbConnection, query2).fetchall()
 
-        query3 = "SELECT serviceID, serviceName " \
-        "FROM Services " \
-        "ORDER BY serviceID ASC;"
+        query3 = (
+            "SELECT serviceID, serviceName " "FROM Services " "ORDER BY serviceID ASC;"
+        )
         services = db.query(dbConnection, query3).fetchall()
 
         # send the data to the update form if one is selected during an update attempt
@@ -324,15 +349,17 @@ def DeviceServices():
         deviceService_id = request.args.get("deviceService_id")
         if deviceService_id:
             query4 = "SELECT DeviceServices.deviceServiceID as 'Device Service ID', DeviceServices.deviceID as 'Device ID', DeviceServices.serviceID as 'Service ID' FROM DeviceServices WHERE DeviceServices.deviceServiceID = %s;"
-            selected_deviceService = db.query(dbConnection, query4, (deviceService_id,)).fetchone()
+            selected_deviceService = db.query(
+                dbConnection, query4, (deviceService_id,)
+            ).fetchone()
 
         # Render the deviceServices j2 file, and also send the renderer
         return render_template(
-            "DeviceServices.j2", 
+            "DeviceServices.j2",
             deviceServices=deviceServices,
             devices=devices,
             services=services,
-            selected_deviceService=selected_deviceService
+            selected_deviceService=selected_deviceService,
         )
 
     except Exception as e:
@@ -343,6 +370,7 @@ def DeviceServices():
         # Close the DB connection, if it exists
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
+
 
 # get services
 # Citation for the following code:
@@ -355,8 +383,10 @@ def Services():
         dbConnection = db.connectDB()  # Open our database connection
 
         # Create and execute our queries
-        query1 = "SELECT Services.serviceID as 'Service ID', Services.serviceName as 'Service Name', Services.port as Port, Services.protocol as Protocol " \
-        "FROM Services "
+        query1 = (
+            "SELECT Services.serviceID as 'Service ID', Services.serviceName as 'Service Name', Services.port as Port, Services.protocol as Protocol "
+            "FROM Services "
+        )
         services = db.query(dbConnection, query1).fetchall()
 
         # send the data to the update form if one is selected during an update attempt
@@ -368,9 +398,7 @@ def Services():
 
         # Render the services j2 file, and also send the renderer
         return render_template(
-            "Services.j2", 
-            services=services,
-            selected_service=selected_service
+            "Services.j2", services=services, selected_service=selected_service
         )
 
     except Exception as e:
@@ -381,6 +409,7 @@ def Services():
         # Close the DB connection, if it exists
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
+
 
 # get knownThreats
 # Citation for the following code:
@@ -393,9 +422,10 @@ def KnownThreats():
         dbConnection = db.connectDB()  # Open our database connection
 
         # Create and execute our queries
-        query1 = "SELECT KnownThreats.threatID as 'Threat ID', KnownThreats.name as 'Name', KnownThreats.type as 'Type', KnownThreats.description as 'Description', KnownThreats.dateFirstSeen as 'Date First Seen', KnownThreats.dateLastSeen as 'Date Last Seen' " \
-        "FROM KnownThreats " \
-        
+        query1 = (
+            "SELECT KnownThreats.threatID as 'Threat ID', KnownThreats.name as 'Name', KnownThreats.type as 'Type', KnownThreats.description as 'Description', KnownThreats.dateFirstSeen as 'Date First Seen', KnownThreats.dateLastSeen as 'Date Last Seen' "
+            "FROM KnownThreats "
+        )
         knownThreats = db.query(dbConnection, query1).fetchall()
 
         # send the data to the update form if one is selected during an update attempt
@@ -403,13 +433,15 @@ def KnownThreats():
         threat_id = request.args.get("threat_id")
         if threat_id:
             query2 = "SELECT KnownThreats.threatID as 'Threat ID', KnownThreats.name as 'Name', KnownThreats.type as 'Type', KnownThreats.description as 'Description', KnownThreats.dateFirstSeen as 'Date First Seen', KnownThreats.dateLastSeen as 'Date Last Seen' FROM KnownThreats WHERE KnownThreats.threatID = %s;"
-            selected_knownThreat = db.query(dbConnection, query2, (threat_id,)).fetchone()
+            selected_knownThreat = db.query(
+                dbConnection, query2, (threat_id,)
+            ).fetchone()
 
         # Render the knownThreats j2 file, and also send the renderer
         return render_template(
-            "KnownThreats.j2", 
+            "KnownThreats.j2",
             knownThreats=knownThreats,
-            selected_knownThreat=selected_knownThreat
+            selected_knownThreat=selected_knownThreat,
         )
 
     except Exception as e:
@@ -421,11 +453,13 @@ def KnownThreats():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+
 # Citation for the following routes:
 # Date: 5/6/25
 # Base code was for routes was adapted from Exploation - Implementing CUD Operations Into Your App
 # Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-implementing-cud-operations-in-your-app?module_item_id=25352968
 # base code was augumented with some original code
+
 
 # CREATE ROUTES START
 @app.route("/Users/create", methods=["POST"])
@@ -451,7 +485,7 @@ def create_user():
 
         # Citation for the following code:
         # Date: 6/8/25
-        # Copied from /OR/ Adapted from /OR/ Based on 
+        # Copied from /OR/ Adapted from /OR/ Based on
         # Adapted from the exploration code with additional error catching using flash - tutorial linked below
         # Source URL: https://www.tutorialspoint.com/flask/flask_message_flashing.htm
         # I needed to know how to generate a popup message on an error (duplicate unique fields), I have heard of flash before
@@ -475,6 +509,7 @@ def create_user():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+
 @app.route("/Devices/create", methods=["POST"])
 def create_device():
     try:
@@ -488,18 +523,19 @@ def create_device():
         status = request.form["create_device_status"]
         assignedTo = request.form["create_device_assignedTo"]
 
-        
         try:
             # Create and execute our queries
             query1 = "CALL sp_CreateDevice(%s, %s, %s, %s, %s);"
-            cursor.execute(query1, (deviceName, ipAddress, deviceType, status, assignedTo))
+            cursor.execute(
+                query1, (deviceName, ipAddress, deviceType, status, assignedTo)
+            )
 
             # Commit the changes to the database
             dbConnection.commit()
 
         # Citation for the following code:
         # Date: 6/8/25
-        # Copied from /OR/ Adapted from /OR/ Based on 
+        # Copied from /OR/ Adapted from /OR/ Based on
         # Adapted from the exploration code with additional error catching using flash - tutorial linked below
         # Source URL: https://www.tutorialspoint.com/flask/flask_message_flashing.htm
         # I needed to know how to generate a popup message on an error (duplicate unique fields), I have heard of flash before
@@ -575,7 +611,9 @@ def create_incidentDevice():
         # Commit the changes to the database
         dbConnection.commit()
 
-        print(f"CREATE IncidentDevices. Incident ID: {incidentID}, Device ID: {deviceID}")
+        print(
+            f"CREATE IncidentDevices. Incident ID: {incidentID}, Device ID: {deviceID}"
+        )
 
         # Redirect to the IncidentDevices page
         return redirect("/IncidentDevices")
@@ -588,6 +626,7 @@ def create_incidentDevice():
         # Close the DB connection, if it exists
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
+
 
 @app.route("/Responses/create", methods=["POST"])
 def create_response():
@@ -602,10 +641,13 @@ def create_response():
         timeEnded = request.form["create_response_timeEnded"]
         actionPerformed = request.form["create_response_actionPerformed"]
         status = request.form["create_response_status"]
-        
+
         # Create and execute our queries
         query1 = "CALL sp_CreateResponse(%s, %s, %s, %s, %s, %s);"
-        cursor.execute(query1, (incidentID, userID, timeStarted, timeEnded, actionPerformed, status))
+        cursor.execute(
+            query1,
+            (incidentID, userID, timeStarted, timeEnded, actionPerformed, status),
+        )
 
         # Commit the changes to the database
         dbConnection.commit()
@@ -623,6 +665,7 @@ def create_response():
         # Close the DB connection, if it exists
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
+
 
 @app.route("/DeviceServices/create", methods=["POST"])
 def create_deviceService():
@@ -655,6 +698,7 @@ def create_deviceService():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+
 @app.route("/Services/create", methods=["POST"])
 def create_service():
     try:
@@ -675,7 +719,7 @@ def create_service():
             dbConnection.commit()
         # Citation for the following code:
         # Date: 6/8/25
-        # Copied from /OR/ Adapted from /OR/ Based on 
+        # Copied from /OR/ Adapted from /OR/ Based on
         # Adapted from the exploration code with additional error catching using flash - tutorial linked below
         # Source URL: https://www.tutorialspoint.com/flask/flask_message_flashing.htm
         # I needed to know how to generate a popup message on an error (duplicate unique fields), I have heard of flash before
@@ -699,6 +743,7 @@ def create_service():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+
 @app.route("/KnownThreats/create", methods=["POST"])
 def create_knownThreat():
     try:
@@ -714,7 +759,9 @@ def create_knownThreat():
 
         # Create and execute our queries
         query1 = "CALL sp_CreateKnownThreat(%s, %s, %s, %s, %s);"
-        cursor.execute(query1, (name, threatType, description, dateFirstSeen, dateLastSeen))
+        cursor.execute(
+            query1, (name, threatType, description, dateFirstSeen, dateLastSeen)
+        )
 
         # Commit the changes to the database
         dbConnection.commit()
@@ -737,14 +784,12 @@ def create_knownThreat():
 # CREATE ROUTES END
 
 
-
-
-
 # Citation for the following routes:
 # Date: 5/6/25
 # Base code was for routes was adapted from Exploation - Implementing CUD Operations Into Your App
 # Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-implementing-cud-operations-in-your-app?module_item_id=25352968
 # base code was augumented with some original code
+
 
 # DELETE ROUTES START
 @app.route("/Users/delete", methods=["POST"])
@@ -778,6 +823,7 @@ def delete_user():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+
 @app.route("/Incidents/delete", methods=["POST"])
 def delete_incident():
     try:
@@ -807,6 +853,7 @@ def delete_incident():
         # Close the DB connection, if it exists
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
+
 
 @app.route("/IncidentDevices/delete", methods=["POST"])
 def delete_incidentDevice():
@@ -838,6 +885,7 @@ def delete_incidentDevice():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+
 @app.route("/Responses/delete", methods=["POST"])
 def delete_response():
     try:
@@ -867,6 +915,7 @@ def delete_response():
         # Close the DB connection, if it exists
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
+
 
 @app.route("/Devices/delete", methods=["POST"])
 def delete_device():
@@ -898,6 +947,7 @@ def delete_device():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+
 @app.route("/DeviceServices/delete", methods=["POST"])
 def delete_deviceService():
     try:
@@ -926,6 +976,7 @@ def delete_deviceService():
         # Close the DB connection, if it exists
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
+
 
 @app.route("/Services/delete", methods=["POST"])
 def delete_service():
@@ -956,6 +1007,7 @@ def delete_service():
         # Close the DB connection, if it exists
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
+
 
 @app.route("/KnownThreats/delete", methods=["POST"])
 def delete_knownThreat():
@@ -988,6 +1040,7 @@ def delete_knownThreat():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+
 # DELETE ROUTES END
 
 
@@ -998,12 +1051,13 @@ def delete_knownThreat():
 # base code was augumented with some original code
 # UPDATE ROUTES START
 
+
 # update users
 @app.route("/Users/update", methods=["POST"])
 def update_users():
     try:
         dbConnection = db.connectDB()  # Open our database connection
-        cursor = dbConnection.cursor() 
+        cursor = dbConnection.cursor()
 
         # get the form data
         userID = request.form["update_user_id"]
@@ -1019,15 +1073,15 @@ def update_users():
                     request.form["update_user_lastName"],
                     request.form["update_user_email"],
                     request.form["update_user_department"],
-                    request.form["update_user_role"]
-                )
+                    request.form["update_user_role"],
+                ),
             )
 
             dbConnection.commit()  # commit the changes
 
         # Citation for the following code:
         # Date: 6/8/25
-        # Copied from /OR/ Adapted from /OR/ Based on 
+        # Copied from /OR/ Adapted from /OR/ Based on
         # Adapted from the exploration code with additional error catching using flash - tutorial linked below
         # Source URL: https://www.tutorialspoint.com/flask/flask_message_flashing.htm
         # I needed to know how to generate a popup message on an error (duplicate unique fields), I have heard of flash before
@@ -1037,7 +1091,7 @@ def update_users():
             flash("Error: A user with that email already exists.")
             return redirect("/Users")
 
-        #redirect to the Users page
+        # redirect to the Users page
         return redirect("/Users")
     except Exception as e:
         print(f"Error executing queries: {e}")
@@ -1047,12 +1101,13 @@ def update_users():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+
 # update incidents
 @app.route("/Incidents/update", methods=["POST"])
 def update_incidents():
     try:
         dbConnection = db.connectDB()  # Open our database connection
-        cursor = dbConnection.cursor() 
+        cursor = dbConnection.cursor()
 
         # get the form data
         incidentID = request.form["update_incident_id"]
@@ -1067,13 +1122,13 @@ def update_incidents():
                 request.form["update_incident_description"],
                 request.form["update_incident_priority"],
                 request.form["update_incident_status"],
-                request.form["update_incident_threatID"]
-            )
+                request.form["update_incident_threatID"],
+            ),
         )
 
         dbConnection.commit()  # commit the changes
 
-        #redirect to the Incidents page
+        # redirect to the Incidents page
         return redirect("/Incidents")
     except Exception as e:
         print(f"Error executing queries: {e}")
@@ -1083,12 +1138,13 @@ def update_incidents():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+
 # update incidentDevices
 @app.route("/IncidentDevices/update", methods=["POST"])
 def update_incidentDevices():
     try:
         dbConnection = db.connectDB()  # Open our database connection
-        cursor = dbConnection.cursor() 
+        cursor = dbConnection.cursor()
 
         # get the form data
         incidentDeviceID = request.form["update_incidentDevices_id"]
@@ -1097,18 +1153,11 @@ def update_incidentDevices():
 
         # queries
         query1 = "CALL sp_UpdateIncidentDevice(%s, %s, %s);"
-        cursor.execute(
-            query1,
-            (
-                incidentDeviceID,
-                incidentID,
-                deviceID
-            )
-        )
+        cursor.execute(query1, (incidentDeviceID, incidentID, deviceID))
 
         dbConnection.commit()  # commit the changes
 
-        #redirect to the IncidentDevices page
+        # redirect to the IncidentDevices page
         return redirect("/IncidentDevices")
     except Exception as e:
         print(f"Error executing queries: {e}")
@@ -1118,12 +1167,13 @@ def update_incidentDevices():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+
 # update responses
 @app.route("/Responses/update", methods=["POST"])
 def update_responses():
     try:
         dbConnection = db.connectDB()  # Open our database connection
-        cursor = dbConnection.cursor() 
+        cursor = dbConnection.cursor()
 
         # get the form data
         responseID = request.form["update_responseID"]
@@ -1137,13 +1187,13 @@ def update_responses():
                 request.form["update_timeStarted"],
                 request.form["update_timeEnded"],
                 request.form["update_actionPerformed"],
-                request.form["update_status"]
-            )
+                request.form["update_status"],
+            ),
         )
 
         dbConnection.commit()  # commit the changes
 
-        #redirect to the Responses page
+        # redirect to the Responses page
         return redirect("/Responses")
     except Exception as e:
         print(f"Error executing queries: {e}")
@@ -1153,12 +1203,13 @@ def update_responses():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+
 # update devices
 @app.route("/Devices/update", methods=["POST"])
 def update_devices():
     try:
         dbConnection = db.connectDB()  # Open our database connection
-        cursor = dbConnection.cursor() 
+        cursor = dbConnection.cursor()
 
         # get the form data
         deviceID = request.form["update_device_id"]
@@ -1174,15 +1225,15 @@ def update_devices():
                     request.form["update_device_ipAddress"],
                     request.form["update_device_type"],
                     request.form["update_device_status"],
-                    request.form["update_device_assignedTo"]
-                )
+                    request.form["update_device_assignedTo"],
+                ),
             )
 
             dbConnection.commit()  # commit the changes
-            
+
         # Citation for the following code:
         # Date: 6/8/25
-        # Copied from /OR/ Adapted from /OR/ Based on 
+        # Copied from /OR/ Adapted from /OR/ Based on
         # Adapted from the exploration code with additional error catching using flash - tutorial linked below
         # Source URL: https://www.tutorialspoint.com/flask/flask_message_flashing.htm
         # I needed to know how to generate a popup message on an error (duplicate unique fields), I have heard of flash before
@@ -1192,7 +1243,7 @@ def update_devices():
             flash("Error: A device with that name and/or IP address already exists.")
             return redirect("/Devices")
 
-        #redirect to the Devices page
+        # redirect to the Devices page
         return redirect("/Devices")
     except Exception as e:
         print(f"Error executing queries: {e}")
@@ -1202,16 +1253,16 @@ def update_devices():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+
 # update deviceServices
 @app.route("/DeviceServices/update", methods=["POST"])
 def update_deviceServices():
     try:
         dbConnection = db.connectDB()  # Open our database connection
-        cursor = dbConnection.cursor() 
+        cursor = dbConnection.cursor()
 
         # get the form data
         deviceServiceID = request.form["update_deviceService_id"]
-        
 
         # queries
         query1 = "CALL sp_UpdateDeviceService(%s, %s, %s);"
@@ -1220,13 +1271,13 @@ def update_deviceServices():
             (
                 deviceServiceID,
                 request.form["update_deviceService_device"],
-                request.form["update_deviceService_service"]
-            )
+                request.form["update_deviceService_service"],
+            ),
         )
 
         dbConnection.commit()  # commit the changes
 
-        #redirect to the DeviceServices page
+        # redirect to the DeviceServices page
         return redirect("/DeviceServices")
     except Exception as e:
         print(f"Error executing queries: {e}")
@@ -1236,12 +1287,13 @@ def update_deviceServices():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+
 # update services
 @app.route("/Services/update", methods=["POST"])
 def update_services():
     try:
         dbConnection = db.connectDB()  # Open our database connection
-        cursor = dbConnection.cursor() 
+        cursor = dbConnection.cursor()
 
         # get the form data
         serviceID = request.form["update_service_id"]
@@ -1255,14 +1307,14 @@ def update_services():
                     serviceID,
                     request.form["update_service_name"],
                     request.form["update_service_port"],
-                    request.form["update_service_protocol"]
-                )
+                    request.form["update_service_protocol"],
+                ),
             )
 
             dbConnection.commit()  # commit the changes
         # Citation for the following code:
         # Date: 6/8/25
-        # Copied from /OR/ Adapted from /OR/ Based on 
+        # Copied from /OR/ Adapted from /OR/ Based on
         # Adapted from the exploration code with additional error catching using flash - tutorial linked below
         # Source URL: https://www.tutorialspoint.com/flask/flask_message_flashing.htm
         # I needed to know how to generate a popup message on an error (duplicate unique fields), I have heard of flash before
@@ -1272,7 +1324,7 @@ def update_services():
             flash("Error: A service with that name already exists.")
             return redirect("/Services")
 
-        #redirect to the Services page
+        # redirect to the Services page
         return redirect("/Services")
     except Exception as e:
         print(f"Error executing queries: {e}")
@@ -1282,12 +1334,13 @@ def update_services():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+
 # update knownThreats
 @app.route("/KnownThreats/update", methods=["POST"])
 def update_knownThreats():
     try:
         dbConnection = db.connectDB()  # Open our database connection
-        cursor = dbConnection.cursor() 
+        cursor = dbConnection.cursor()
 
         # get the form data
         threatID = request.form["update_knownThreat_id"]
@@ -1302,13 +1355,13 @@ def update_knownThreats():
                 request.form["update_knownThreat_type"],
                 request.form["update_knownThreat_description"],
                 request.form["update_knownThreat_dateFirstSeen"],
-                request.form["update_knownThreat_dateLastSeen"]
-            )
+                request.form["update_knownThreat_dateLastSeen"],
+            ),
         )
 
         dbConnection.commit()  # commit the changes
 
-        #redirect to the KnownThreats page
+        # redirect to the KnownThreats page
         return redirect("/KnownThreats")
     except Exception as e:
         print(f"Error executing queries: {e}")
@@ -1317,6 +1370,7 @@ def update_knownThreats():
         # Close the DB connection
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
+
 
 # ########################################
 # ########## LISTENER
