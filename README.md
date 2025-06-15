@@ -1,9 +1,9 @@
-Disclaimer: This project originated as a collaboration with [Dawson Herrington](https://github.com/dawson-herrington) for Oregon State University's CS340 (Spring 2025) Class Project. This version includes my personal UI layout, CRUD logic, and post-submission improvements.
+_Disclaimer: This project originated as a collaboration with [Dawson Herrington](https://github.com/dawson-herrington) for Oregon State University's CS340 (Spring 2025) Class Project. This version includes my personal UI layout, CRUD logic, and post-submission improvements._
 
-# CS340-Project
+# Cybersecurity Incident Tracker Dashboard
 All code is based originally (then modified) on the CS340 starter code except:
 - The specifics of our procedures in PL.SQL
-- style.CSS (original + based on documentation - cited in code and below)
+- style.css (original + based on documentation - cited in code and below)
 - Inline styling in the templates
 - Specific pre-population functionality on updates in templates
 - Duplicate error handling in app.py
@@ -19,398 +19,74 @@ I would reccomend this to future students.
 I would also like to draw attention to the extensive work on the update code in each template. Extensive code both original and assisted (cited where appropriate) went into 
 getting a second route set up to prepopulate data and in styling it, then merging those changes together.
 
----------- File Specific Citations ----------
-*also present in files*
-*explanation follows each citation*
+## Project Overview
 
----------- db_connector.py ----------
+This is a full-stack web dashboard designed to track cybersecurity incidents, associated devices, services, and response actions across an organization. Users can log incidents, assign devices and responders, and maintain service records — all through a clean and accessible interface.
 
-# Citation for the following code:
-# Date: 5/6/25
-# Copied from Exploation - Web Application Technology
-# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-web-application-technology-2?module_item_id=25352948
-(top-level, concerning the entire file)
+The goal of this project was to:
 
----------- PL.SQL ----------
--- Citation for the following sql code:
--- Date: 6/9/25
--- Modified from the base code provided in the PL/SQL Exploration
--- Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-pl-slash-sql-part-1-sp-view-and-function?module_item_id=25352958
-(top-level, concerning entire file)
+- Practice relational database design (MySQL)
+- Build a backend using Flask (Python)
+- Design a user-friendly frontend with HTML, CSS, and Jinja
+- Implement robust CRUD (Create, Read, Update, Delete) operations.
+- Collaborate using Git and GitHub workflows
 
----------- style.css ----------
-/*citations*/
-/*Citation for the basis of the CSS:*/
-/*Date: 5/9/25*/
-/*Adapted and modified from Tailwinds css tool*/
-/*Source URL: https://tailwindcss.com/*/
-(top-level, concerning basis for CSS)
+## Technologies Used
+- Frontend: HTML5, CSS(Tailwind), Jinja
+- Backend: Flask
+- Database: MySQL
+- Version Control: Git + GitHub
 
-/*Citation for Icons*/
-/*Date: 5/9/25*/
-/*Icons from below website*/
-/*Source URL: https://heroicons.com/*/
-(top-level, concern origins of graphic art serving as icons on the page)
+## Database Schema
+The system includes the following core tables:
+- **Users**: Admins or responders who can be assigned to incidents
+- **Devices**: Machines involved in or affected by cybersecurity threats
+- **Services**: Networked services running on those devices
+- **Incidents**: Security events recorded by the team
+- **Responses**: Many-to-Many relationship between Users and Incidents, used for tracking response actions
+- **KnownThreats**: Catalog of threat signatures or profiles
 
----------- Devices.j2 ----------
-{# Citation for the following code: #}
-{# Date: 5/6/25 #}
-{# Adapted from Exploation _ Web Application Technology #}
-{# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration_web_application_technology_2?module_item_id=25352948#}
-(top-level, concerning entire file)
+## Key Features
+- Add, update, and delete Users, Devices, Services, and Incidents
+- Assign Devices to Incidents, and Users to Responses
+- Use stored procedures for all backend insert/update operations
+- Flash messages for user feedback
+- UI layout optimized for clarity and CRUD functionality
+- Error handling for duplicate fields and relational constraints
 
-{# Citation for the following code: #}
-{# Date: 6/8/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Adapted from the exploration code with additional error catching using flash - tutorial linked below #}
-{# Source URL: https://www.tutorialspoint.com/flask/flask_message_flashing.htm }
-{# I needed to know how to generate a popup message on an error (duplicate unique fields), I have heard of flash before #}
-{# so I researched from there and found this tutorial. The code is original + adapted from website #}
-{# duplicate popup #}
-(in-line, concerning flashing implementation)
+## UI Design Highlights
+- Clean, professional layout that mimics production admin dashboards
+- Logical grouping of create/update forms side-by-side
+- Responsive dropdowns for selecting entities to update
+- Consistent typography and form design
+- Ready for further responsiveness and modal integration (in-progress)
 
-{# Citation for the following code: #}
-{# Date: 6/2/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Copilot helped me solve a hunch, details below. #}
-{# Source URL: www.m365.cloud.microsoft #}
-{# If AI tools were used: #}
-{# I realized that an empty list would result in an index error but was unsure on how to fix it/embed the proper logic. #}
-{# Prompt: When keying into a list as seen in code: ***Removed for brevity, see below*, how can I use a conditional #}
-{# To handle a potentially empty data set. After some refinements we arrived at the solution you see below, which is only #}
-{# slighty modified from the original code #}
-(in-line, concerning AI assistance in debugging an index error in our READ table)
+## My Post-Submission Improvements
+- Clean separation of create vs. update logic using dual form submission
+- Improved table layout for readability
+- Enhanced delete button accessibility
+- Planned work: responsive layout, reusable modal forms, button redesign
 
-{# Citation for the following code: #}
-{# Date: 6/8/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Starter Code + Copilot assisted in some of the embedded preopulation logic, details below. #}
-{# Source URL: www.m365.cloud.microsoft #}
-{# If AI tools were used: #}
-{# The original Update forms were based on the Flask starter code provided in the explorations. #}
-{# To enable pre-population functionality, I added code to the get routes in the app.py file but was struggling#}
-{# to have the changes populate in the form after severl attempts. I gave copilot the following initial prompt: #}
-{# "How can one populate the update fields upon selection of an object from the dropdown with the following route: *inserted app.py get route*.#}
-{# "I beleive I am close but cannot locate my errors" After some refinement prompts and slight tweaking I arrived at the solution you see below.#}
-(in-line, concerning AI assistance for getting prepopulation of update up and running)
+## Running Locally
+_Note: This project was originally deployed to a MariaDB database provided by OSU. You will need to configure your own database to run this app._
 
----------- DeviceServices.j2 ----------
-{# Citation for the following code: #}
-{# Date: 5/6/25 #}
-{# Adapted from Exploation _ Web Application Technology #}
-{# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration_web_application_technology_2?module_item_id=25352948#}
-(top-level, concerning entire file)
+    # Clone the repo  
+    git clone https://github.com/dcross17/cybersec-db-dashboard.git  
+    cd cybersec-db-dashboard  
 
-{# Citation for the following code: #}
-{# Date: 6/2/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Copilot helped me solve a hunch, details below. #}
-{# Source URL: www.m365.cloud.microsoft #}
-{# If AI tools were used: #}
-{# I realized that an empty list would result in an index error but was unsure on how to fix it/embed the proper logic. #}
-{# Prompt: When keying into a list as seen in code: ***Removed for brevity, see below*, how can I use a conditional #}
-{# To handle a potentially empty data set. After some refinements we arrived at the solution you see below, which is only #}
-{# slighty modified from the original code #}
-(in-line, concerning AI assistance in debugging an index error in our READ table)
+    # (Optional) create a virtual environment
+    python3 -m venv venv  
+    source venv/bin/activate`
 
-{# Citation for the following code: #}
-{# Date: 6/8/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Starter Code + Copilot assisted in some of the embedded preopulation logic, details below. #}
-{# Source URL: www.m365.cloud.microsoft #}
-{# If AI tools were used: #}
-{# The original Update forms were based on the Flask starter code provided in the explorations. #}
-{# To enable pre-population functionality, I added code to the get routes in the app.py file but was struggling#}
-{# to have the changes populate in the form after severl attempts. I gave copilot the following initial prompt: #}
-{# "How can one populate the update fields upon selection of an object from the dropdown with the following route: *inserted app.py get route*.#}
-{# "I beleive I am close but cannot locate my errors" After some refinement prompts and slight tweaking I arrived at the solution you see below.#}
-(in-line, concerning AI assistance for getting prepopulation of update up and running)
+    # Install dependencies
+    pip install -r requirements.txt
 
----------- home.j2 ----------
-{# Citation for the following code: #}
-{# Date: 5/6/25 #}
-{# Adapted from Exploation _ Web Application Technology #}
-{# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration_web_application_technology_2?module_item_id=25352948#}
-(top-level, concerning entire file)
+    # Set up environment variables and DB connection
+    # (See db_connector.py for reference)
 
----------- IncidentDevices.j2 ----------
-{# Citation for the following code: #}
-{# Date: 5/6/25 #}
-{# Adapted from Exploation _ Web Application Technology #}
-{# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration_web_application_technology_2?module_item_id=25352948#}
-(top-level, concerning entire file)
+    # Run the app
+    python app.py
 
-{# Citation for the following code: #}
-{# Date: 6/2/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Copilot helped me solve a hunch, details below. #}
-{# Source URL: www.m365.cloud.microsoft #}
-{# If AI tools were used: #}
-{# I realized that an empty list would result in an index error but was unsure on how to fix it/embed the proper logic. #}
-{# Prompt: When keying into a list as seen in code: ***Removed for brevity, see below*, how can I use a conditional #}
-{# To handle a potentially empty data set. After some refinements we arrived at the solution you see below, which is only #}
-{# slighty modified from the original code #}
-(in-line, concerning AI assistance in debugging an index error in our READ table)
-
-{# Citation for the following code: #}
-{# Date: 6/8/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Starter Code + Copilot assisted in some of the embedded preopulation logic, details below. #}
-{# Source URL: www.m365.cloud.microsoft #}
-{# If AI tools were used: #}
-{# The original Update forms were based on the Flask starter code provided in the explorations. #}
-{# To enable pre-population functionality, I added code to the get routes in the app.py file but was struggling#}
-{# to have the changes populate in the form after severl attempts. I gave copilot the following initial prompt: #}
-{# "How can one populate the update fields upon selection of an object from the dropdown with the following route: *inserted app.py get route*.#}
-{# "I beleive I am close but cannot locate my errors" After some refinement prompts and slight tweaking I arrived at the solution you see below.#}
-(in-line, concerning AI assistance for getting prepopulation of update up and running)
-
----------- Incidents.j2 ----------
-{# Citation for the following code: #}
-{# Date: 5/6/25 #}
-{# Adapted from Exploation _ Web Application Technology #}
-{# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration_web_application_technology_2?module_item_id=25352948#}
-(top-level, concerning entire file)
-
-{# Citation for the following code: #}
-{# Date: 6/2/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Copilot helped me solve a hunch, details below. #}
-{# Source URL: www.m365.cloud.microsoft #}
-{# If AI tools were used: #}
-{# I realized that an empty list would result in an index error but was unsure on how to fix it/embed the proper logic. #}
-{# Prompt: When keying into a list as seen in code: ***Removed for brevity, see below*, how can I use a conditional #}
-{# To handle a potentially empty data set. After some refinements we arrived at the solution you see below, which is only #}
-{# slighty modified from the original code #}
-(in-line, concerning AI assistance in debugging an index error in our READ table)
-
-{# Citation for the following code: #}
-{# Date: 6/8/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Starter Code + Copilot assisted in some of the embedded preopulation logic, details below. #}
-{# Source URL: www.m365.cloud.microsoft #}
-{# If AI tools were used: #}
-{# The original Update forms were based on the Flask starter code provided in the explorations. #}
-{# To enable pre-population functionality, I added code to the get routes in the app.py file but was struggling#}
-{# to have the changes populate in the form after severl attempts. I gave copilot the following initial prompt: #}
-{# "How can one populate the update fields upon selection of an object from the dropdown with the following route: *inserted app.py get route*.#}
-{# "I beleive I am close but cannot locate my errors" After some refinement prompts and slight tweaking I arrived at the solution you see below.#}
-(in-line, concerning AI assistance for getting prepopulation of update up and running)
-
----------- KnownThreats.j2 ----------
-{# Citation for the following code: #}
-{# Date: 5/6/25 #}
-{# Adapted from Exploation _ Web Application Technology #}
-{# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration_web_application_technology_2?module_item_id=25352948#}
-(top-level, concerning entire file)
-
-{# Citation for the following code: #}
-{# Date: 6/2/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Copilot helped me solve a hunch, details below. #}
-{# Source URL: www.m365.cloud.microsoft #}
-{# If AI tools were used: #}
-{# I realized that an empty list would result in an index error but was unsure on how to fix it/embed the proper logic. #}
-{# Prompt: When keying into a list as seen in code: ***Removed for brevity, see below*, how can I use a conditional #}
-{# To handle a potentially empty data set. After some refinements we arrived at the solution you see below, which is only #}
-{# slighty modified from the original code #}
-(in-line, concerning AI assistance in debugging an index error in our READ table)
-
-{# Citation for the following code: #}
-{# Date: 6/8/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Starter Code + Copilot assisted in some of the embedded preopulation logic, details below. #}
-{# Source URL: www.m365.cloud.microsoft #}
-{# If AI tools were used: #}
-{# The original Update forms were based on the Flask starter code provided in the explorations. #}
-{# To enable pre-population functionality, I added code to the get routes in the app.py file but was struggling#}
-{# to have the changes populate in the form after severl attempts. I gave copilot the following initial prompt: #}
-{# "How can one populate the update fields upon selection of an object from the dropdown with the following route: *inserted app.py get route*.#}
-{# "I beleive I am close but cannot locate my errors" After some refinement prompts and slight tweaking I arrived at the solution you see below.#}
-(in-line, concerning AI assistance for getting prepopulation of update up and running)
-
----------- main.j2 ----------
-{# Citation for the following code: #}
-{# Date: 5/6/25 #}
-{# Adapted from Exploation _ Web Application Technology #}
-{# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration_web_application_technology_2?module_item_id=25352948#}
-(top-level, concerning entire file)
-
----------- Responses.j2 ----------
-{# Citation for the following code: #}
-{# Date: 5/6/25 #}
-{# Adapted from Exploation _ Web Application Technology #}
-{# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration_web_application_technology_2?module_item_id=25352948#}
-(top-level, concerning entire file)
-
-{# Citation for the following code: #}
-{# Date: 6/2/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Copilot helped me solve a hunch, details below. #}
-{# Source URL: www.m365.cloud.microsoft #}
-{# If AI tools were used: #}
-{# I realized that an empty list would result in an index error but was unsure on how to fix it/embed the proper logic. #}
-{# Prompt: When keying into a list as seen in code: ***Removed for brevity, see below*, how can I use a conditional #}
-{# To handle a potentially empty data set. After some refinements we arrived at the solution you see below, which is only #}
-{# slighty modified from the original code #}
-(in-line, concerning AI assistance in debugging an index error in our READ table)
-
-{# Citation for the following code: #}
-{# Date: 6/8/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Starter Code + Copilot assisted in some of the embedded preopulation logic, details below. #}
-{# Source URL: www.m365.cloud.microsoft #}
-{# If AI tools were used: #}
-{# The original Update forms were based on the Flask starter code provided in the explorations. #}
-{# To enable pre-population functionality, I added code to the get routes in the app.py file but was struggling#}
-{# to have the changes populate in the form after severl attempts. I gave copilot the following initial prompt: #}
-{# "How can one populate the update fields upon selection of an object from the dropdown with the following route: *inserted app.py get route*.#}
-{# "I beleive I am close but cannot locate my errors" After some refinement prompts and slight tweaking I arrived at the solution you see below.#}
-(in-line, concerning AI assistance for getting prepopulation of update up and running)
-
----------- Services.j2 ----------
-{# Citation for the following code: #}
-{# Date: 5/6/25 #}
-{# Adapted from Exploation _ Web Application Technology #}
-{# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration_web_application_technology_2?module_item_id=25352948#}
-(top-level, concerning entire file)
-
-{# Citation for the following code: #}
-{# Date: 6/8/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Adapted from the exploration code with additional error catching using flash - tutorial linked below #}
-{# Source URL: https://www.tutorialspoint.com/flask/flask_message_flashing.htm }
-{# I needed to know how to generate a popup message on an error (duplicate unique fields), I have heard of flash before #}
-{# so I researched from there and found this tutorial. The code is original + adapted from website #}
-{# duplicate popup #}
-(in-line, concerning flashing implementation)
-
-{# Citation for the following code: #}
-{# Date: 6/2/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Copilot helped me solve a hunch, details below. #}
-{# Source URL: www.m365.cloud.microsoft #}
-{# If AI tools were used: #}
-{# I realized that an empty list would result in an index error but was unsure on how to fix it/embed the proper logic. #}
-{# Prompt: When keying into a list as seen in code: ***Removed for brevity, see below*, how can I use a conditional #}
-{# To handle a potentially empty data set. After some refinements we arrived at the solution you see below, which is only #}
-{# slighty modified from the original code #}
-(in-line, concerning AI assistance in debugging an index error in our READ table)
-
-{# Citation for the following code: #}
-{# Date: 6/8/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Starter Code + Copilot assisted in some of the embedded preopulation logic, details below. #}
-{# Source URL: www.m365.cloud.microsoft #}
-{# If AI tools were used: #}
-{# The original Update forms were based on the Flask starter code provided in the explorations. #}
-{# To enable pre-population functionality, I added code to the get routes in the app.py file but was struggling#}
-{# to have the changes populate in the form after severl attempts. I gave copilot the following initial prompt: #}
-{# "How can one populate the update fields upon selection of an object from the dropdown with the following route: *inserted app.py get route*.#}
-{# "I beleive I am close but cannot locate my errors" After some refinement prompts and slight tweaking I arrived at the solution you see below.#}
-(in-line, concerning AI assistance for getting prepopulation of update up and running)
-
----------- Users.j2 ----------
-{# Citation for the following code: #}
-{# Date: 5/6/25 #}
-{# Adapted from Exploation _ Web Application Technology #}
-{# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration_web_application_technology_2?module_item_id=25352948#}
-(top-level, concerning entire file)
-
-{# Citation for the following code: #}
-{# Date: 6/8/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Adapted from the exploration code with additional error catching using flash - tutorial linked below #}
-{# Source URL: https://www.tutorialspoint.com/flask/flask_message_flashing.htm }
-{# I needed to know how to generate a popup message on an error (duplicate unique fields), I have heard of flash before #}
-{# so I researched from there and found this tutorial. The code is original + adapted from website #}
-{# duplicate popup #}
-(in-line, concerning flashing implementation)
-
-{# Citation for the following code: #}
-{# Date: 6/2/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Copilot helped me solve a hunch, details below. #}
-{# Source URL: www.m365.cloud.microsoft #}
-{# If AI tools were used: #}
-{# I realized that an empty list would result in an index error but was unsure on how to fix it/embed the proper logic. #}
-{# Prompt: When keying into a list as seen in code: ***Removed for brevity, see below*, how can I use a conditional #}
-{# To handle a potentially empty data set. After some refinements we arrived at the solution you see below, which is only #}
-{# slighty modified from the original code #}
-(in-line, concerning AI assistance in debugging an index error in our READ table)
-
-{# Citation for the following code: #}
-{# Date: 6/8/25 #}
-{# Copied from /OR/ Adapted from /OR/ Based on #}
-{# Starter Code + Copilot assisted in some of the embedded preopulation logic, details below. #}
-{# Source URL: www.m365.cloud.microsoft #}
-{# If AI tools were used: #}
-{# The original Update forms were based on the Flask starter code provided in the explorations. #}
-{# To enable pre-population functionality, I added code to the get routes in the app.py file but was struggling#}
-{# to have the changes populate in the form after severl attempts. I gave copilot the following initial prompt: #}
-{# "How can one populate the update fields upon selection of an object from the dropdown with the following route: *inserted app.py get route*.#}
-{# "I beleive I am close but cannot locate my errors" After some refinement prompts and slight tweaking I arrived at the solution you see below.#}
-(in-line, concerning AI assistance for getting prepopulation of update up and running)
-
----------- app.py ----------
-# Citation for the following routes:
-# Date: 5/6/25
-# Base code was for routes was adapted from Exploation - Web Application Technology
-# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-web-application-technology-2?module_item_id=25352948
-(top-level, concerning basis for app.py page)
-
-# RESET ROUTE
-# Citation for the following code:
-# Date: 5/20/25
-# Copied from /OR/ Adapted from /OR/ Based on 
-# Adapted from the CUD Operations exploration with a small amount of copilot, described below
-# Source URL: www.m365.cloud.microsoft
-# If AI tools were used: The online line that copilot helped with was the callproc. All other code
-# was adapted from our class materials. I could not figure out how to call a procedure with a cursor in this
-# context. Prompt used: "How do I call a stored procedure with a cursor in a route handler in Flask?"
-(in-line, concerning reset route)
-
-# Citation for the following code:
-# Date: 5/19/25
-# Source URL: www.m365.cloud.microsoft (copilot)
-# If AI tools were used: copilot autocomplete was implemented in order to assist with alias creation on the query1 line. Everything else was already present
-(in-line concerning all create routes and copilot autocomplete) - repeated for every read route
-
-# Citation for the following routes:
-# Date: 5/6/25
-# Base code was for routes was adapted from Exploation - Implementing CUD Operations Into Your App
-# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-implementing-cud-operations-in-your-app?module_item_id=25352968
-# base code was augumented with some original code
-(function level, concerning basis for create routes)
-
-# Citation for the following code:
-# Date: 6/8/25
-# Copied from /OR/ Adapted from /OR/ Based on 
-# Adapted from the exploration code with additional error catching using flash - tutorial linked below
-# Source URL: https://www.tutorialspoint.com/flask/flask_message_flashing.htm
-# I needed to know how to generate a popup message on an error (duplicate unique fields), I have heard of flash before
-# so I researched from there and found this tutorial. The code is original + adapted from website
-(in line, concerning tutorial for popup message functionality) - repeats within every create route
-
-# Citation for the following routes:
-# Date: 5/6/25
-# Base code was for routes was adapted from Exploation - Implementing CUD Operations Into Your App
-# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-implementing-cud-operations-in-your-app?module_item_id=25352968
-# base code was augumented with some original code
-(function level, concerning basis for delete routes)
-
-# Citation for the following routes:
-# Date: 5/6/25
-# Base code was for routes was adapted from Exploation - Implementing CUD Operations Into Your App
-# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-implementing-cud-operations-in-your-app?module_item_id=25352968
-# base code was augumented with some original code
-(function level, concerning basis for update routes)
-
-# Citation for the following code:
-# Date: 6/8/25
-# Copied from /OR/ Adapted from /OR/ Based on 
-# Adapted from the exploration code with additional error catching using flash - tutorial linked below
-# Source URL: https://www.tutorialspoint.com/flask/flask_message_flashing.htm
-# I needed to know how to generate a popup message on an error (duplicate unique fields), I have heard of flash before
-# so I researched from there and found this tutorial. The code is original + adapted from website
-(in line, concerning tutorial for popup message functionality) - repeats within every update route
+## Credits
+- UI/UX, final CRUD logic, and post-submission polish by @dcross17
+- Original database design and backend structure in collaboration with [Dawson Herrington](https://github.com/dawson-herrington)

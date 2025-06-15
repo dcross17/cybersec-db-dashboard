@@ -1,4 +1,4 @@
--- Active: 1746477031140@@127.0.0.1@3306@netsec_db
+-- Active: 1749955578181@@127.0.0.1@3306@mydb
 -- ###############
 -- RESET Database to sample data
 -- Citation for the following sql code:
@@ -14,16 +14,6 @@ BEGIN
 
     -- Table drops for testing purposes
     DROP TABLE IF EXISTS DeviceServices;-- KnownThreats table
-    CREATE TABLE KnownThreats (
-        threatID INT AUTO_INCREMENT not NULL UNIQUE,
-        name VARCHAR(100) not NULL,
-        type ENUM('Malware', 'Exploit', 'Tool', 'Other'),
-        description TEXT,
-        dateFirstSeen DATETIME,
-        dateLastSeen DATETIME,
-
-        PRIMARY KEY (threatID)
-    );
     DROP TABLE IF EXISTS IncidentDevices;
     DROP TABLE IF EXISTS Responses;
     DROP TABLE IF EXISTS Incidents;
@@ -694,10 +684,6 @@ BEGIN
 END;
 
 
-
-
-
-
 -- update Procedures
 
 -- update Users
@@ -713,7 +699,7 @@ BEGIN
     email = p_email, department = p_department, role = p_role
     WHERE userID = p_userID;
 
-END
+END;
 
 
 -- update Incidents

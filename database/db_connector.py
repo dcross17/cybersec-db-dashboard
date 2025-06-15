@@ -3,14 +3,13 @@
 # Copied from Exploation - Web Application Technology
 # Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-web-application-technology-2?module_item_id=25352948
 
-
 import MySQLdb
 
 # Database credentials
 host = "localhost"
 user = "root"
-passwd = ""
-db = "netsec_db"
+db = "mydb"
+passwd = "my-secret-pw" if db == "mydb" else ""
 
 
 def connectDB(host=host, user=user, passwd=passwd, db=db):

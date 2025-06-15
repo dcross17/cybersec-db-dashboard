@@ -13,6 +13,20 @@
             "database": "netsec_db",
             "username": "root",
             "password": ""
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "laptop-db",
+            "username": "root",
+            "database": "mydb",
+            "askForPassword": true
         }
     ]
 }
